@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { TouchBackend } from 'react-dnd-touch-backend'
 import { isTouchDevice } from './utils/isTouchDevice'
-import Puzzle from './components/Puzzle'
-import { puzzles } from './utils/puzzles'
-import { ThemeProvider, useTheme } from './context/ThemeContext'
-import usePuzzleStore from './store/usePuzzles'
 import './App.css'
+import Puzzle from './components/Puzzle'
+import usePuzzleStore from './store/usePuzzles'
+import { ThemeProvider, useTheme } from './context/ThemeContext'
 
 // Determine which backend to use based on device type
 const backendOptions = {

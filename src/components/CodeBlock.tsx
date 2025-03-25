@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useDrag } from 'react-dnd';
 import { CodeBlock as CodeBlockType } from '../utils/puzzles';
 import { useTheme } from '../context/ThemeContext';

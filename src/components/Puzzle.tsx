@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import CodeBlock from './CodeBlock';
@@ -20,7 +20,6 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   const { 
     loadNextPuzzle,
     completeEntirePuzzle,
-    resetCurrentPuzzle: resetPuzzleStore,
   } = usePuzzleStore();
   
   const [slots, setSlots] = useState(puzzle.sections[puzzle.currentSectionIndex].slots);
