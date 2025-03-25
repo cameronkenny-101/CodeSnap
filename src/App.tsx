@@ -4,8 +4,9 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { TouchBackend } from 'react-dnd-touch-backend'
 import { isTouchDevice } from './utils/isTouchDevice'
 import Puzzle from './components/Puzzle'
-import { puzzles, UserProgress, initialUserProgress } from './utils/puzzles'
+import { puzzles } from './utils/puzzles'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
+import usePuzzleStore from './store/usePuzzles'
 import './App.css'
 
 // Determine which backend to use based on device type
@@ -18,53 +19,32 @@ const dndBackend = isTouchDevice() ? TouchBackend : HTML5Backend
 
 function AppContent() {
   const { isDarkMode, toggleTheme } = useTheme()
-  const [userProgress, setUserProgress] = useState<UserProgress>(() => {
-    const savedProgress = localStorage.getItem('userProgress')
-    return savedProgress ? JSON.parse(savedProgress) : initialUserProgress
-  })
+  const puzzleStore = usePuzzleStore()
   
-  // Save progress to localStorage whenever it changes
+  // Initialize puzzle on first load
   useEffect(() => {
-    localStorage.setItem('userProgress', JSON.stringify(userProgress))
-  }, [userProgress])
+    if (!puzzleStore.currentPuzzle) {
+      puzzleStore.loadPuzzle()
+    }
+  }, [])
 
   // Handle correct answer
   const handleCorrectAnswer = () => {
-    // Increase ELO slightly for correct answers
-    setUserProgress(prev => ({
-      ...prev,
-      elo: prev.elo + 5
-    }))
+    console.log('[DEBUG] App handleCorrectAnswer called');
+    // Don't finish the puzzle on every correct answer
+    // Only increase ELO or track stats if needed
   }
 
   // Handle incorrect answer
   const handleIncorrectAnswer = () => {
-    // Decrease ELO for incorrect answers
-    setUserProgress(prev => ({
-      ...prev,
-      elo: Math.max(prev.elo - 15, 0) // Prevent negative ELO
-    }))
+    console.log('[DEBUG] App handleIncorrectAnswer called');
+    // Don't automatically move to next puzzle
+    // The user will decide whether to retry or move on
   }
 
   // Handle puzzle completion
   const handlePuzzleComplete = () => {
-    const currentPuzzleId = puzzles[userProgress.currentPuzzleIndex].id
-    
-    // Add to solved puzzles if not already there
-    setUserProgress(prev => {
-      const solvedPuzzles = prev.solvedPuzzles.includes(currentPuzzleId)
-        ? prev.solvedPuzzles
-        : [...prev.solvedPuzzles, currentPuzzleId]
-      
-      return {
-        ...prev,
-        solvedPuzzles,
-        // Move to next puzzle, or if this is the last one, loop back to first
-        currentPuzzleIndex: (prev.currentPuzzleIndex + 1) % puzzles.length,
-        // Increase ELO more significantly for completing a puzzle
-        elo: prev.elo + 20
-      }
-    })
+    // This is now handled in the store's finishPuzzle
   }
 
   return (
@@ -74,7 +54,7 @@ function AppContent() {
           <div className="flex items-center">
             <h1 className="text-lg md:text-xl font-bold">CodeSnap</h1>
             <div className="ml-3 px-2 py-1 rounded-full text-xs md:text-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-              ELO: {userProgress.elo}
+              ELO: {puzzleStore.userProgress.elo}
             </div>
           </div>
           <button 
@@ -89,12 +69,14 @@ function AppContent() {
       
       <main className="container mx-auto px-2 sm:px-4 py-4 md:py-6 flex-grow">
         <DndProvider backend={dndBackend} options={backendOptions}>
-          <Puzzle 
-            puzzle={puzzles[userProgress.currentPuzzleIndex]}
-            onPuzzleComplete={handlePuzzleComplete}
-            onCorrectAnswer={handleCorrectAnswer}
-            onIncorrectAnswer={handleIncorrectAnswer}
-          />
+          {puzzleStore.currentPuzzle && (
+            <Puzzle 
+              puzzle={puzzleStore.currentPuzzle}
+              onPuzzleComplete={handlePuzzleComplete}
+              onCorrectAnswer={handleCorrectAnswer}
+              onIncorrectAnswer={handleIncorrectAnswer}
+            />
+          )}
         </DndProvider>
       </main>
       

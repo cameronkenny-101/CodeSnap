@@ -6,6 +6,7 @@ import CodeSlot from './CodeSlot';
 import usePuzzleStore from '../store/usePuzzles';
 import { Puzzle as PuzzleType, CodeBlock as CodeBlockType } from '../utils/puzzles';
 import { useTheme } from '../context/ThemeContext';
+import { playErrorSound } from '../utils/audio';
 
 interface PuzzleProps {
   puzzle: PuzzleType;
@@ -18,7 +19,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   const { isDarkMode } = useTheme();
   const { 
     loadNextPuzzle,
-    finishPuzzle,
+    completeEntirePuzzle,
     resetCurrentPuzzle: resetPuzzleStore,
   } = usePuzzleStore();
   
@@ -31,37 +32,94 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     type: 'none',
     message: ''
   });
+  const [showRetryOptions, setShowRetryOptions] = useState(false);
+  const [showErrorAnimation, setShowErrorAnimation] = useState(false);
   
   // Initialize puzzle state
   const initializePuzzleState = () => {
+    if (!puzzle) return;
+    
+    console.log('[DEBUG] Initializing puzzle state for:', puzzle.id);
+    
     setCurrentSectionIndex(puzzle.currentSectionIndex);
-    setSlots(puzzle.sections[puzzle.currentSectionIndex].slots);
     
-    // Initialize blocks with shuffle
-    const sectionBlocks = [...puzzle.sections[puzzle.currentSectionIndex].blocks];
-    shuffleArray(sectionBlocks);
-    setBlocks(sectionBlocks);
+    // Deep copy the slots to prevent reference issues
+    const freshSlots = JSON.parse(JSON.stringify(puzzle.sections[puzzle.currentSectionIndex].slots));
+    setSlots(freshSlots);
     
-    // Ensure all slots are reset
+    // Deep copy and initialize blocks with shuffle
+    const freshBlocks = JSON.parse(JSON.stringify(puzzle.sections[puzzle.currentSectionIndex].blocks));
+    shuffleArray(freshBlocks);
+    setBlocks(freshBlocks);
+    
+    // Reset all states
     setAllSlotsFilled(false);
     setIsTransitioning(false);
+    setShowRetryOptions(false);
+    setShowErrorAnimation(false);
     setFeedbackMessage({type: 'none', message: ''});
+    
+    console.log('[DEBUG] Initialized with blocks:', freshBlocks.map((block: CodeBlockType) => block.id));
   };
   
   useEffect(() => {
     // When the puzzle changes, reset the state
-    initializePuzzleState();
+    console.log('[DEBUG] Puzzle changed:', { 
+      puzzleId: puzzle?.id,
+      title: puzzle?.title,
+      sections: puzzle?.sections?.length,
+      currentSection: puzzle?.currentSectionIndex
+    });
+    // Completely reset all state before initializing
+    setBlocks([]);
+    setSlots([]);
+    setAllSlotsFilled(false);
+    setIsTransitioning(false);
+    setShowRetryOptions(false);
+    setShowErrorAnimation(false);
+    setFeedbackMessage({type: 'none', message: ''});
+    
+    // Now initialize with fresh state
+    setTimeout(() => {
+      initializePuzzleState();
+    }, 0);
   }, [puzzle]);
+
+  useEffect(() => {
+    // For debugging - track section changes
+    console.log('[DEBUG] Section state updated:', { 
+      puzzleId: puzzle?.id,
+      title: puzzle?.title, 
+      currentSectionIndex,
+      totalSections: puzzle?.sections?.length,
+      sectionTitle: puzzle?.sections[currentSectionIndex]?.title
+    });
+  }, [currentSectionIndex, puzzle]);
 
   useEffect(() => {
     // Update when section changes
     if (currentSectionIndex !== puzzle.currentSectionIndex) {
-      setSlots(puzzle.sections[currentSectionIndex].slots);
+      console.log('[DEBUG] Section changed:', { 
+        from: puzzle.currentSectionIndex, 
+        to: currentSectionIndex 
+      });
       
-      // Initialize blocks with shuffle
-      const sectionBlocks = [...puzzle.sections[currentSectionIndex].blocks];
-      shuffleArray(sectionBlocks);
-      setBlocks(sectionBlocks);
+      // Reset any lingering state first
+      setIsTransitioning(false);
+      setShowRetryOptions(false);
+      setShowErrorAnimation(false);
+      setFeedbackMessage({type: 'none', message: ''});
+      
+      // Deep copy the slots to prevent reference issues
+      const freshSlots = JSON.parse(JSON.stringify(puzzle.sections[currentSectionIndex].slots));
+      setSlots(freshSlots);
+      
+      // Deep copy and initialize blocks with shuffle
+      const freshBlocks = JSON.parse(JSON.stringify(puzzle.sections[currentSectionIndex].blocks));
+      shuffleArray(freshBlocks);
+      setBlocks(freshBlocks);
+      
+      console.log('[DEBUG] Section initialized with blocks:', freshBlocks.map((b: CodeBlockType) => b.id));
     }
   }, [currentSectionIndex, puzzle]);
 
@@ -114,13 +172,25 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     }
   };
 
+  // Handle block click to move to first empty slot
+  const handleBlockClick = (blockId: string) => {
+    // Find first empty slot
+    const emptySlot = slots.find(slot => slot.filledWithBlockId === null);
+    if (emptySlot) {
+      handleBlockDrop(blockId, emptySlot.id);
+    }
+  };
+
+  // Handle slot click to move block back
+  const handleSlotClick = (slotId: string) => {
+    const slot = slots.find(s => s.id === slotId);
+    if (slot && slot.filledWithBlockId) {
+      handleSlotReset(slotId, slot.filledWithBlockId);
+    }
+  };
+
   // Handle reset button click
   const handleReset = () => {
-    if (isTransitioning) return;
-    
-    // Reset store state if needed
-    resetPuzzleStore();
-    
     // Reset all slots to empty
     setSlots(prevSlots => 
       prevSlots.map(slot => ({
@@ -138,37 +208,57 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     
     // Clear any feedback message
     setFeedbackMessage({type: 'none', message: ''});
+    
+    // Ensure transitioning state is reset
+    setIsTransitioning(false);
   };
 
-  // Guaranteed next puzzle transition
-  const immediatelyGoToNextPuzzle = () => {
-    // Update ELO and progress first
-    finishPuzzle(false);
+  const handleRetry = () => {
+    console.log('[DEBUG] handleRetry called');
     
-    // Then load next puzzle
+    // First reset all state flags
+    setShowRetryOptions(false);
+    setIsTransitioning(false);
+    setShowErrorAnimation(false);
+    setFeedbackMessage({type: 'none', message: ''});
+    
+    // Then reset the slots and blocks
+    handleReset();
+    
+    console.log('[DEBUG] After handleRetry - isTransitioning:', false);
+  };
+
+  const handleMoveToNext = () => {
+    console.log('[DEBUG] handleMoveToNext called');
+    setShowRetryOptions(false);
+    setIsTransitioning(false);
+    
+    // Explicitly load the next puzzle
     loadNextPuzzle();
     
-    // Force re-initialization of puzzle state on next render cycle
-    requestAnimationFrame(() => {
-      initializePuzzleState();
-      
-      // Transition completed
-      setIsTransitioning(false);
-      
-      // Clear any feedback
-      setFeedbackMessage({type: 'none', message: ''});
-    });
+    setFeedbackMessage({type: 'none', message: ''});
   };
 
   const checkSolution = () => {
-    if (isTransitioning) return; // Prevent multiple clicks during transition
+    console.log('[DEBUG] checkSolution called');
+    if (isTransitioning) {
+      console.log('[DEBUG] Preventing check - isTransitioning is true');
+      return;
+    }
     
     // Check if all slots have the correct blocks
     const isCorrect = slots.every(slot => 
       slot.filledWithBlockId === slot.correctBlockId
     );
 
+    console.log('[DEBUG] Solution check result:', { 
+      isCorrect, 
+      currentSectionIndex, 
+      totalSections: puzzle.sections.length 
+    });
+
     if (isCorrect) {
+      setIsTransitioning(true);
       // Show success feedback
       setFeedbackMessage({
         type: 'success',
@@ -183,52 +273,63 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       // Call correct answer handler
       onCorrectAnswer();
       
-      setIsTransitioning(true);
-      
       // If there are more sections, move to the next one
       if (currentSectionIndex < puzzle.sections.length - 1) {
         const nextSectionIndex = currentSectionIndex + 1;
+        console.log('[DEBUG] Scheduling move to next section after correct answer', { nextSectionIndex });
         
         // Move to next section after a short delay
         setTimeout(() => {
+          console.log('[DEBUG] Moving to next section now');
           setCurrentSectionIndex(nextSectionIndex);
           setIsTransitioning(false);
           setFeedbackMessage({type: 'none', message: ''});
         }, 800);
       } else {
         // This was the last section, puzzle is complete
+        console.log('[DEBUG] Scheduling puzzle completion (success)');
         setTimeout(() => {
+          console.log('[DEBUG] Completing puzzle now');
           onPuzzleComplete();
-          finishPuzzle(true);
+          // Only call completeEntirePuzzle when the entire puzzle (all sections) is complete
+          completeEntirePuzzle(true);
           setIsTransitioning(false);
           setFeedbackMessage({type: 'none', message: ''});
         }, 800);
       }
     } else {
-      // Show error feedback
-      setFeedbackMessage({
-        type: 'error',
-        message: 'That\'s not quite right. Moving to next puzzle...'
-      });
-      
-      // Call incorrect answer handler
-      onIncorrectAnswer();
-      
-      // Mark slots as incorrect but go to next puzzle after a short delay
-      setIsTransitioning(true);
-      
-      // Mark incorrect slots
+      console.log('[DEBUG] Incorrect answer - setting error state');
+      // Mark incorrect slots and show error message
       setSlots(prevSlots => 
         prevSlots.map(slot => ({
           ...slot,
           isIncorrect: slot.filledWithBlockId !== slot.correctBlockId && slot.filledWithBlockId !== null
         }))
       );
+
+      // Show error message
+      setFeedbackMessage({
+        type: 'error',
+        message: 'Incorrect! Would you like to try again?'
+      });
       
-      // Wait a moment to show the red highlight before transitioning
-      setTimeout(() => {
-        immediatelyGoToNextPuzzle();
-      }, 1500);
+      // Play error sound effect
+      playErrorSound();
+      
+      // Trigger error animation
+      setShowErrorAnimation(true);
+      setTimeout(() => setShowErrorAnimation(false), 700); // Duration of the red-flash animation
+      
+      // Show retry options
+      setShowRetryOptions(true);
+      console.log('[DEBUG] Set showRetryOptions:', true);
+      
+      // Call incorrect answer handler
+      onIncorrectAnswer();
+
+      // Set transitioning state to prevent further submissions until user chooses an option
+      setIsTransitioning(true);
+      console.log('[DEBUG] Set isTransitioning:', true);
     }
   };
 
@@ -254,6 +355,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
                   : undefined
                 }
                 isIncorrect={slot.isIncorrect}
+                onSlotClick={handleSlotClick}
               />
             </span>
           );
@@ -284,6 +386,19 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   
   // Get current section
   const currentSection = puzzle.sections[currentSectionIndex];
+  
+  // Check if submit button should be disabled
+  const isSubmitDisabled = !allSlotsFilled || isTransitioning;
+  
+  // For debugging
+  useEffect(() => {
+    console.log('[DEBUG] Submit button state:', { 
+      allSlotsFilled, 
+      isTransitioning, 
+      showRetryOptions,
+      isDisabled: isSubmitDisabled
+    });
+  }, [allSlotsFilled, isTransitioning, showRetryOptions]);
   
   // Feedback message styling
   const getFeedbackStyle = () => {
@@ -317,8 +432,24 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         
         {/* Feedback message */}
         {feedbackMessage.type !== 'none' && (
-          <div className={`mb-4 px-4 py-3 rounded-md border text-center ${getFeedbackStyle()} transition-all duration-300`}>
+          <div className={`mb-4 px-4 py-3 rounded-md border text-center ${getFeedbackStyle()} transition-all duration-300 fade-in`}>
             {feedbackMessage.message}
+            {showRetryOptions && (
+              <div className="mt-3 flex justify-center gap-3">
+                <button
+                  onClick={handleRetry}
+                  className="px-3 py-1 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
+                >
+                  Try Again
+                </button>
+                <button
+                  onClick={handleMoveToNext}
+                  className="px-3 py-1 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Next Puzzle
+                </button>
+              </div>
+            )}
           </div>
         )}
         
@@ -341,7 +472,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           
           <div className={`editor-content p-4 font-mono text-sm overflow-x-auto ${
             isDarkMode ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'
-          }`}>
+          } ${showErrorAnimation ? 'red-flash' : ''}`}>
             <div className="code-area flex justify-center">
               <pre className="text-center">
                 {renderCodeTemplate(currentSection.codeTemplate)}
@@ -366,6 +497,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
                 key={block.id}
                 block={block}
                 isDraggable={!isTransitioning}
+                onBlockClick={handleBlockClick}
               />
             ))}
             {blocks.length === 0 && (
@@ -379,9 +511,9 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         <div className="flex gap-3 justify-center">
           <button
             onClick={checkSolution}
-            disabled={!allSlotsFilled || isTransitioning}
+            disabled={isSubmitDisabled}
             className={`px-4 py-1.5 rounded-md font-medium text-sm transition-all ${
-              !allSlotsFilled || isTransitioning
+              isSubmitDisabled
                 ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
                 : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 shadow-sm'
             }`}
@@ -391,9 +523,9 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           
           <button
             onClick={handleReset}
-            disabled={isTransitioning}
+            disabled={isTransitioning && !showRetryOptions}
             className={`px-4 py-1.5 rounded-md font-medium text-sm transition-all ${
-              isTransitioning
+              isTransitioning && !showRetryOptions
                 ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 shadow-sm'
             }`}

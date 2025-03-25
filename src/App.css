@@ -42,117 +42,6 @@
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-  20%, 40%, 60%, 80% { transform: translateX(2px); }
-}
-
-.animate-shake {
-  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-}
-
-:root {
-  --dark-bg: #1e293b;
-  --light-bg: #f8fafc;
-  --dark-text: #f8fafc;
-  --light-text: #0f172a;
-}
-
-/* LeetCode-style UI */
-.leetcode-container {
-  max-width: 900px;
-  margin: 0 auto;
-  border-radius: 8px;
-}
-
-.problem-title {
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: 600;
-}
-
-.problem-difficulty {
-  display: inline-flex;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.editor-container {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.editor-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid;
-}
-
-.editor-content {
-  padding: 1rem;
-  font-family: monospace;
-  overflow: auto;
-  min-height: 200px;
-  max-height: 300px;
-}
-
-/* Code area with centered content */
-.code-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.code-area pre {
-  text-align: center;
-  display: inline-block;
-  margin: 0 auto;
-}
-
-/* Block container with centered content */
-.block-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  overflow-y: auto;
-  min-height: 60px;
-  height: 100px;
-  max-height: 120px;
-}
-
-.dark .block-container {
-  border-color: #334155;
-  background-color: #1e293b;
-}
-
-/* Mobile optimization for blocks */
-@media (max-width: 640px) {
-  .leetcode-container {
-    padding: 0.5rem;
-  }
-  
-  .problem-title {
-    font-size: 1.25rem;
-    line-height: 1.75rem;
-  }
-  
-  .editor-content {
-    padding: 0.5rem;
-  }
-}
-
-/* Animation for incorrect answer */
-@keyframes shake {
   0% { transform: translateX(0); }
   20% { transform: translateX(-3px); }
   40% { transform: translateX(3px); }
@@ -163,6 +52,17 @@
 
 .shake {
   animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Red flash animation for incorrect answers */
+@keyframes redFlash {
+  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.3); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+.red-flash {
+  animation: redFlash 0.7s ease-out;
 }
 
 /* Fade animations for transitions */

@@ -543,6 +543,265 @@ export const puzzles: Puzzle[] = [
         isVisible: false
       }
     ]
+  },
+  {
+    id: 'bubble-sort',
+    title: 'Bubble Sort Algorithm',
+    description: 'Complete the bubble sort algorithm by filling in the missing logic.',
+    difficulty: 2,
+    currentSectionIndex: 0,
+    sections: [
+      {
+        id: 'bubble-sort-outer',
+        title: 'Outer Loop',
+        description: 'First, implement the outer loop of the bubble sort algorithm.',
+        codeTemplate: `function bubbleSort(arr) {
+  %SLOT-1% {
+    // Inner loop will go here
+  }
+  return arr;
+}`,
+        slots: [
+          {
+            id: 'slot-1',
+            correctBlockId: 'block-1',
+            filledWithBlockId: null,
+            isSolved: false
+          }
+        ],
+        blocks: [
+          {
+            id: 'block-1',
+            content: 'for (let i = 0; i < arr.length - 1; i++)',
+            isCorrect: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-2',
+            content: 'while (i < arr.length)',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-3',
+            content: 'for (let i = 0; i < arr.length; i++)',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          }
+        ],
+        isVisible: true
+      },
+      {
+        id: 'bubble-sort-inner',
+        title: 'Inner Loop',
+        description: 'Now implement the inner loop that performs the actual swapping.',
+        codeTemplate: `function bubbleSort(arr) {
+  for (let i = 0; i < arr.length - 1; i++) {
+    %SLOT-1% {
+      if (arr[j] > arr[j + 1]) {
+        %SLOT-2%;
+      }
+    }
+  }
+  return arr;
+}`,
+        slots: [
+          {
+            id: 'slot-1',
+            correctBlockId: 'block-1',
+            filledWithBlockId: null,
+            isSolved: false
+          },
+          {
+            id: 'slot-2',
+            correctBlockId: 'block-3',
+            filledWithBlockId: null,
+            isSolved: false
+          }
+        ],
+        blocks: [
+          {
+            id: 'block-1',
+            content: 'for (let j = 0; j < arr.length - 1 - i; j++)',
+            isCorrect: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-2',
+            content: 'for (let j = 0; j < arr.length; j++)',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-3',
+            content: '[arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]',
+            isCorrect: true,
+            slotId: 'slot-2'
+          },
+          {
+            id: 'block-4',
+            content: 'let temp = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = temp;',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-2'
+          }
+        ],
+        isVisible: false
+      }
+    ]
+  },
+  {
+    id: 'merge-sort',
+    title: 'Merge Sort Algorithm',
+    description: 'Complete the merge sort algorithm by filling in the missing logic.',
+    difficulty: 4,
+    currentSectionIndex: 0,
+    sections: [
+      {
+        id: 'merge-sort-merge',
+        title: 'Merge Function',
+        description: 'First, implement the merge function that combines two sorted arrays.',
+        codeTemplate: `function merge(left, right) {
+  let result = [];
+  let i = 0;
+  let j = 0;
+
+  while (i < left.length && j < right.length) {
+    if (%SLOT-1%) {
+      result.push(left[i]);
+      i++;
+    } else {
+      result.push(right[j]);
+      j++;
+    }
+  }
+
+  return %SLOT-2%;
+}`,
+        slots: [
+          {
+            id: 'slot-1',
+            correctBlockId: 'block-1',
+            filledWithBlockId: null,
+            isSolved: false
+          },
+          {
+            id: 'slot-2',
+            correctBlockId: 'block-3',
+            filledWithBlockId: null,
+            isSolved: false
+          }
+        ],
+        blocks: [
+          {
+            id: 'block-1',
+            content: 'left[i] <= right[j]',
+            isCorrect: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-2',
+            content: 'left[i] < right[j]',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-3',
+            content: '[...result, ...left.slice(i), ...right.slice(j)]',
+            isCorrect: true,
+            slotId: 'slot-2'
+          },
+          {
+            id: 'block-4',
+            content: 'result.concat(left.slice(i)).concat(right.slice(j))',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-2'
+          }
+        ],
+        isVisible: true
+      },
+      {
+        id: 'merge-sort-split',
+        title: 'Split Function',
+        description: 'Now implement the recursive split function that divides the array.',
+        codeTemplate: `function mergeSort(arr) {
+  if (arr.length <= 1) return arr;
+  
+  const mid = %SLOT-1%;
+  const left = %SLOT-2%;
+  const right = %SLOT-3%;
+  
+  return merge(mergeSort(left), mergeSort(right));
+}`,
+        slots: [
+          {
+            id: 'slot-1',
+            correctBlockId: 'block-1',
+            filledWithBlockId: null,
+            isSolved: false
+          },
+          {
+            id: 'slot-2',
+            correctBlockId: 'block-2',
+            filledWithBlockId: null,
+            isSolved: false
+          },
+          {
+            id: 'slot-3',
+            correctBlockId: 'block-3',
+            filledWithBlockId: null,
+            isSolved: false
+          }
+        ],
+        blocks: [
+          {
+            id: 'block-1',
+            content: 'Math.floor(arr.length / 2)',
+            isCorrect: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-2',
+            content: 'arr.slice(0, mid)',
+            isCorrect: true,
+            slotId: 'slot-2'
+          },
+          {
+            id: 'block-3',
+            content: 'arr.slice(mid)',
+            isCorrect: true,
+            slotId: 'slot-3'
+          },
+          {
+            id: 'block-4',
+            content: 'arr.length / 2',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-5',
+            content: 'arr.splice(0, mid)',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-2'
+          },
+          {
+            id: 'block-6',
+            content: 'arr.splice(mid)',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-3'
+          }
+        ],
+        isVisible: false
+      }
+    ]
   }
 ];
 

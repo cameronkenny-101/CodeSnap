@@ -1,30 +1,19 @@
 import { create } from 'zustand';
-import { puzzles, Puzzle, CodeBlock, UserProgress, initialUserProgress, PuzzleSection } from '../utils/puzzles';
+import { puzzles, Puzzle, UserProgress, initialUserProgress } from '../utils/puzzles';
 import { persist } from 'zustand/middleware';
 
 interface PuzzleState {
-  // Current state
   currentPuzzle: Puzzle | null;
   currentSectionIndex: number;
   userProgress: UserProgress;
   isComplete: boolean;
   
-  // Actions
   loadPuzzle: () => void;
   loadNextPuzzle: () => void;
-  finishPuzzle: (success: boolean) => void;
+  completeEntirePuzzle: (success: boolean) => void;
   resetCurrentPuzzle: () => void;
   resetAllProgress: () => void;
 }
-
-// ELO calculation
-const calculateNewElo = (currentElo: number, puzzleDifficulty: number, isWin: boolean): number => {
-  const K = 32; // K-factor determines how much the rating changes
-  const expectedScore = 1 / (1 + Math.pow(10, (puzzleDifficulty * 200 - currentElo) / 400));
-  const actualScore = isWin ? 1 : 0;
-  
-  return Math.round(currentElo + K * (actualScore - expectedScore));
-};
 
 const usePuzzleStore = create<PuzzleState>()(
   persist(
@@ -37,7 +26,13 @@ const usePuzzleStore = create<PuzzleState>()(
       loadPuzzle: () => {
         const { userProgress } = get();
         const index = userProgress.currentPuzzleIndex % puzzles.length;
-        const puzzle = JSON.parse(JSON.stringify(puzzles[index])) as Puzzle;
+        const puzzle = JSON.parse(JSON.stringify(puzzles[index]));
+        
+        console.log('[DEBUG] Store loadPuzzle:', { 
+          puzzleIndex: index, 
+          puzzleId: puzzle.id,
+          title: puzzle.title
+        });
         
         set({
           currentPuzzle: puzzle,
@@ -49,9 +44,15 @@ const usePuzzleStore = create<PuzzleState>()(
       loadNextPuzzle: () => {
         const { userProgress } = get();
         const nextIndex = (userProgress.currentPuzzleIndex + 1) % puzzles.length;
-        const nextPuzzle = JSON.parse(JSON.stringify(puzzles[nextIndex])) as Puzzle;
+        const nextPuzzle = JSON.parse(JSON.stringify(puzzles[nextIndex]));
         
-        // Update user progress to the next puzzle index
+        console.log('[DEBUG] Store loadNextPuzzle:', { 
+          fromIndex: userProgress.currentPuzzleIndex,
+          toIndex: nextIndex,
+          puzzleId: nextPuzzle.id,
+          title: nextPuzzle.title
+        });
+        
         set({
           userProgress: {
             ...userProgress,
@@ -63,16 +64,17 @@ const usePuzzleStore = create<PuzzleState>()(
         });
       },
       
-      finishPuzzle: (success: boolean) => {
+      completeEntirePuzzle: (success: boolean) => {
         const { currentPuzzle, userProgress } = get();
         if (!currentPuzzle) return;
         
+        console.log('[DEBUG] Store completeEntirePuzzle called with success:', success, {
+          puzzleId: currentPuzzle.id,
+          title: currentPuzzle.title
+        });
+        
         // Calculate new ELO
-        const newElo = calculateNewElo(
-          userProgress.elo, 
-          currentPuzzle.difficulty, 
-          success
-        );
+        const newElo = Math.max(userProgress.elo + (success ? 5 : -15), 0);
         
         // Update user progress
         const updatedProgress = {
@@ -85,20 +87,50 @@ const usePuzzleStore = create<PuzzleState>()(
             ...userProgress.solvedPuzzles,
             currentPuzzle.id
           ];
-        }
-        
-        set({ userProgress: updatedProgress });
-        
-        // If successful, we'll automatically load the next puzzle
-        if (success) {
-          get().loadNextPuzzle();
+          
+          set({ 
+            userProgress: updatedProgress,
+            isComplete: true
+          });
+          
+          // Load next puzzle only on explicit success
+          const nextIndex = (userProgress.currentPuzzleIndex + 1) % puzzles.length;
+          // Use JSON parse/stringify for a true deep copy
+          const nextPuzzle = JSON.parse(JSON.stringify(puzzles[nextIndex]));
+          
+          console.log('[DEBUG] Store preparing next puzzle after completion:', {
+            nextIndex,
+            nextPuzzleId: nextPuzzle.id,
+            nextPuzzleTitle: nextPuzzle.title
+          });
+          
+          set({
+            userProgress: {
+              ...updatedProgress,
+              currentPuzzleIndex: nextIndex
+            },
+            currentPuzzle: nextPuzzle,
+            currentSectionIndex: 0,
+            isComplete: false,
+          });
+        } else {
+          // Only update ELO on failure, don't move to next puzzle
+          // User will decide whether to retry or advance manually
+          set({ 
+            userProgress: updatedProgress
+          });
         }
       },
       
       resetCurrentPuzzle: () => {
         const { userProgress } = get();
         const index = userProgress.currentPuzzleIndex % puzzles.length;
-        const puzzle = JSON.parse(JSON.stringify(puzzles[index])) as Puzzle;
+        const puzzle = JSON.parse(JSON.stringify(puzzles[index]));
+        
+        console.log('[DEBUG] Store resetCurrentPuzzle:', {
+          puzzleId: puzzle.id,
+          title: puzzle.title
+        });
         
         set({
           currentPuzzle: puzzle,

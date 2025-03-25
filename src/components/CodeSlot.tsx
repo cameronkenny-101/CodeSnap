@@ -9,9 +9,10 @@ interface CodeSlotProps {
   onReset: (slotId: string, blockId: string | null) => void;
   filledBlock?: CodeBlockType;
   isIncorrect?: boolean;
+  onSlotClick?: (slotId: string) => void;
 }
 
-const CodeSlot = ({ slot, onBlockDrop, onReset, filledBlock, isIncorrect }: CodeSlotProps) => {
+const CodeSlot = ({ slot, onBlockDrop, onReset, filledBlock, isIncorrect, onSlotClick }: CodeSlotProps) => {
   const { isDarkMode } = useTheme();
   const ref = useRef<HTMLDivElement>(null);
   
@@ -35,6 +36,15 @@ const CodeSlot = ({ slot, onBlockDrop, onReset, filledBlock, isIncorrect }: Code
   const handleReset = () => {
     if (slot.filledWithBlockId) {
       onReset(slot.id, slot.filledWithBlockId);
+    }
+  };
+
+  // Handle slot click
+  const handleClick = () => {
+    if (slot.filledWithBlockId) {
+      handleReset();
+    } else if (onSlotClick) {
+      onSlotClick(slot.id);
     }
   };
   
@@ -94,14 +104,14 @@ const CodeSlot = ({ slot, onBlockDrop, onReset, filledBlock, isIncorrect }: Code
   return (
     <div
       ref={ref}
+      onClick={handleClick}
       className={`
         relative rounded-md border ${getBorderColor()} ${getBackgroundColor()} 
         transition-all duration-200 cursor-pointer 
-        mx-1 my-0.5 shadow-sm
-        ${isIncorrect ? 'animate-shake' : ''}
+        mx-1 my-0.5 shadow-sm hover:shadow-md
+        ${isIncorrect ? 'shake' : ''}
       `}
       style={slotStyle}
-      onClick={slot.filledWithBlockId ? handleReset : undefined}
     >
       {slot.filledWithBlockId ? filledContent : emptyContent}
     </div>
