@@ -1,4 +1,3 @@
-import React from 'react';
 import { puzzles } from './utils/puzzles';
 
 export function ClearStorage() {

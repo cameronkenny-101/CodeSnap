@@ -10,6 +10,7 @@ interface CodeSlotProps {
   filledBlock?: CodeBlockType;
   isIncorrect?: boolean;
   onSlotClick?: (slotId: string) => void;
+  
 }
 
 const CodeSlot = ({ slot, onBlockDrop, onReset, filledBlock, isIncorrect, onSlotClick }: CodeSlotProps) => {

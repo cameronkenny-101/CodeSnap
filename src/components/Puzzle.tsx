@@ -35,7 +35,6 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   const [showRetryOptions, setShowRetryOptions] = useState(false);
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
   const [isLoadingNext, setIsLoadingNext] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize puzzle state
   const initializePuzzleState = () => {
@@ -247,10 +246,8 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     const isCorrect = developerSettings.forceCorrect ? true : 
       slots.every((slot) => {
         const block = blocks.find((b) => b.id === slot.filledWithBlockId);
-        return block?.correctSlotId === slot.id;
+        return block?.slotId === slot.id;
       });
-
-    setIsSubmitting(true);
 
     if (isCorrect) {
       setIsTransitioning(true);
@@ -498,20 +495,6 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       isDisabled: isSubmitDisabled
     });
   }, [allSlotsFilled, isTransitioning, showRetryOptions]);
-
-  // Feedback message styling
-  const getFeedbackStyle = () => {
-    if (feedbackMessage.type === 'success') {
-      return isDarkMode
-        ? 'bg-green-900/20 text-green-300 border-green-700'
-        : 'bg-green-50 text-green-700 border-green-200';
-    } else if (feedbackMessage.type === 'error') {
-      return isDarkMode
-        ? 'bg-red-900/20 text-red-300 border-red-700'
-        : 'bg-red-50 text-red-700 border-red-200';
-    }
-    return 'hidden';
-  };
 
   return (
     <DndProvider backend={HTML5Backend}>
