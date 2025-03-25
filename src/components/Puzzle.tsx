@@ -33,6 +33,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   });
   const [showRetryOptions, setShowRetryOptions] = useState(false);
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
+  const [isLoadingNext, setIsLoadingNext] = useState(false);
 
   // Initialize puzzle state
   const initializePuzzleState = () => {
@@ -231,11 +232,10 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     console.log('[DEBUG] handleMoveToNext called');
     setShowRetryOptions(false);
     setIsTransitioning(false);
-
-    // Explicitly load the next puzzle
-    loadNextPuzzle();
-
     setFeedbackMessage({ type: 'none', message: '' });
+
+    // Load next puzzle
+    loadNextPuzzle();
   };
 
   const checkSolution = () => {
@@ -287,17 +287,19 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       } else {
         // This was the last section, puzzle is complete
         console.log('[DEBUG] Scheduling puzzle completion (success)');
+        setIsLoadingNext(true);
         setTimeout(() => {
           console.log('[DEBUG] Completing puzzle now');
           onPuzzleComplete();
-          // Only call completeEntirePuzzle when the entire puzzle (all sections) is complete
           completeEntirePuzzle(true);
           setIsTransitioning(false);
-          setFeedbackMessage({ type: 'none', message: '' });
-        }, 800);
+          setFeedbackMessage({
+            type: 'success',
+            message: 'Loading next puzzle...'
+          });
+        }, 1200);
       }
     } else {
-      console.log('[DEBUG] Incorrect answer - setting error state');
       // Mark incorrect slots and show error message
       setSlots(prevSlots =>
         prevSlots.map(slot => ({
@@ -309,7 +311,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       // Show error message
       setFeedbackMessage({
         type: 'error',
-        message: "Incorrect! Would you like to try again? (You won't lose any more elo)"
+        message: "Incorrect! Would you like to try the step again?"
       });
 
       // Play error sound effect
@@ -317,14 +319,15 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
 
       // Trigger error animation
       setShowErrorAnimation(true);
-      setTimeout(() => setShowErrorAnimation(false), 700); // Duration of the red-flash animation
+      setTimeout(() => setShowErrorAnimation(false), 700);
 
       // Show retry options
       setShowRetryOptions(true);
       console.log('[DEBUG] Set showRetryOptions:', true);
 
-      // Call incorrect answer handler
+      // Call incorrect answer handler and mark puzzle as failed
       onIncorrectAnswer();
+      completeEntirePuzzle(false);
 
       // Set transitioning state to prevent further submissions until user chooses an option
       setIsTransitioning(true);
@@ -529,29 +532,6 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           <p className="problem-description text-sm text-gray-600 dark:text-gray-300 mt-2">{puzzle.description}</p>
         </div>
 
-        {/* Feedback message */}
-        {feedbackMessage.type !== 'none' && (
-          <div className={`mb-4 px-4 py-3 rounded-md border text-center ${getFeedbackStyle()} transition-all duration-300 fade-in`}>
-            {feedbackMessage.message}
-            {showRetryOptions && (
-              <div className="mt-3 flex justify-center gap-3">
-                <button
-                  onClick={handleRetry}
-                  className="px-3 py-1 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
-                >
-                  Try Again
-                </button>
-                <button
-                  onClick={handleMoveToNext}
-                  className="px-3 py-1 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
-                >
-                  Next Puzzle
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
         <div className="editor-container mb-4 rounded-lg overflow-hidden shadow-md">
           <div className="editor-header flex justify-between items-center bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-2">
@@ -617,7 +597,6 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           >
             Submit
           </button>
-
           <button
             onClick={handleReset}
             disabled={isTransitioning && !showRetryOptions}
@@ -628,8 +607,50 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           >
             Reset
           </button>
+
         </div>
       </div>
+      {/* Feedback message */}
+      {feedbackMessage.type !== 'none' && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+          <div className={`max-w-md w-full mx-4 p-6 rounded-lg border shadow-lg ${feedbackMessage.type === 'success'
+            ? isDarkMode
+              ? 'bg-gray-800 text-green-300 border-green-700'
+              : 'bg-white text-green-700 border-green-200'
+            : isDarkMode
+              ? 'bg-gray-800 text-red-300 border-red-700'
+              : 'bg-white text-red-700 border-red-200'
+            } transition-all duration-300 fade-in`}>
+            <div className="text-center text-lg mb-4">
+              {feedbackMessage.message}
+              {isLoadingNext && (
+                <div className="mt-2">
+                  <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-t-transparent border-current"></div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-center gap-3">
+              {showRetryOptions && (
+                <button
+                  onClick={handleRetry}
+                  className="px-4 py-2 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
+                >
+                  Try Again
+                </button>
+              )}
+              {!isLoadingNext && (
+                <button
+                  onClick={handleMoveToNext}
+                  className="px-4 py-2 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Next Puzzle
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </DndProvider>
   );
 };

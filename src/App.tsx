@@ -19,7 +19,7 @@ const dndBackend = isTouchDevice() ? TouchBackend : HTML5Backend
 function AppContent() {
   const { isDarkMode, toggleTheme } = useTheme()
   const puzzleStore = usePuzzleStore()
-  
+
   // Initialize puzzle on first load
   useEffect(() => {
     if (!puzzleStore.currentPuzzle) {
@@ -56,7 +56,7 @@ function AppContent() {
               ELO: {puzzleStore.userProgress.elo}
             </div>
           </div>
-          <button 
+          <button
             onClick={toggleTheme}
             className={`p-2 rounded-full ${isDarkMode ? 'bg-gray-700 text-yellow-400' : 'bg-gray-200 text-gray-700'}`}
             aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
@@ -65,11 +65,11 @@ function AppContent() {
           </button>
         </div>
       </header>
-      
+
       <main className="container mx-auto px-2 sm:px-4 py-4 md:py-6 flex-grow">
         <DndProvider backend={dndBackend} options={backendOptions}>
           {puzzleStore.currentPuzzle && (
-            <Puzzle 
+            <Puzzle
               puzzle={puzzleStore.currentPuzzle}
               onPuzzleComplete={handlePuzzleComplete}
               onCorrectAnswer={handleCorrectAnswer}
@@ -78,7 +78,7 @@ function AppContent() {
           )}
         </DndProvider>
       </main>
-      
+
       <footer className={`py-3 mt-auto ${isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-600'}`}>
         <div className="container mx-auto px-4 text-center text-xs">
           &copy; {new Date().getFullYear()} CodeSnap - Learn coding through puzzles
