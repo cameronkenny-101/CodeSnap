@@ -17,53 +17,53 @@ interface PuzzleProps {
 
 const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }: PuzzleProps) => {
   const { isDarkMode } = useTheme();
-  const { 
+  const {
     loadNextPuzzle,
     completeEntirePuzzle,
   } = usePuzzleStore();
-  
+
   const [slots, setSlots] = useState(puzzle.sections[puzzle.currentSectionIndex].slots);
   const [blocks, setBlocks] = useState<CodeBlockType[]>([]);
   const [allSlotsFilled, setAllSlotsFilled] = useState(false);
   const [currentSectionIndex, setCurrentSectionIndex] = useState(puzzle.currentSectionIndex);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState<{type: 'success' | 'error' | 'none', message: string}>({
+  const [feedbackMessage, setFeedbackMessage] = useState<{ type: 'success' | 'error' | 'none', message: string }>({
     type: 'none',
     message: ''
   });
   const [showRetryOptions, setShowRetryOptions] = useState(false);
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
-  
+
   // Initialize puzzle state
   const initializePuzzleState = () => {
     if (!puzzle) return;
-    
+
     console.log('[DEBUG] Initializing puzzle state for:', puzzle.id);
-    
+
     setCurrentSectionIndex(puzzle.currentSectionIndex);
-    
+
     // Deep copy the slots to prevent reference issues
     const freshSlots = JSON.parse(JSON.stringify(puzzle.sections[puzzle.currentSectionIndex].slots));
     setSlots(freshSlots);
-    
+
     // Deep copy and initialize blocks with shuffle
     const freshBlocks = JSON.parse(JSON.stringify(puzzle.sections[puzzle.currentSectionIndex].blocks));
     shuffleArray(freshBlocks);
     setBlocks(freshBlocks);
-    
+
     // Reset all states
     setAllSlotsFilled(false);
     setIsTransitioning(false);
     setShowRetryOptions(false);
     setShowErrorAnimation(false);
-    setFeedbackMessage({type: 'none', message: ''});
-    
+    setFeedbackMessage({ type: 'none', message: '' });
+
     console.log('[DEBUG] Initialized with blocks:', freshBlocks.map((block: CodeBlockType) => block.id));
   };
-  
+
   useEffect(() => {
     // When the puzzle changes, reset the state
-    console.log('[DEBUG] Puzzle changed:', { 
+    console.log('[DEBUG] Puzzle changed:', {
       puzzleId: puzzle?.id,
       title: puzzle?.title,
       sections: puzzle?.sections?.length,
@@ -76,8 +76,8 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     setIsTransitioning(false);
     setShowRetryOptions(false);
     setShowErrorAnimation(false);
-    setFeedbackMessage({type: 'none', message: ''});
-    
+    setFeedbackMessage({ type: 'none', message: '' });
+
     // Now initialize with fresh state
     setTimeout(() => {
       initializePuzzleState();
@@ -86,9 +86,9 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
 
   useEffect(() => {
     // For debugging - track section changes
-    console.log('[DEBUG] Section state updated:', { 
+    console.log('[DEBUG] Section state updated:', {
       puzzleId: puzzle?.id,
-      title: puzzle?.title, 
+      title: puzzle?.title,
       currentSectionIndex,
       totalSections: puzzle?.sections?.length,
       sectionTitle: puzzle?.sections[currentSectionIndex]?.title
@@ -98,26 +98,26 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   useEffect(() => {
     // Update when section changes
     if (currentSectionIndex !== puzzle.currentSectionIndex) {
-      console.log('[DEBUG] Section changed:', { 
-        from: puzzle.currentSectionIndex, 
-        to: currentSectionIndex 
+      console.log('[DEBUG] Section changed:', {
+        from: puzzle.currentSectionIndex,
+        to: currentSectionIndex
       });
-      
+
       // Reset any lingering state first
       setIsTransitioning(false);
       setShowRetryOptions(false);
       setShowErrorAnimation(false);
-      setFeedbackMessage({type: 'none', message: ''});
-      
+      setFeedbackMessage({ type: 'none', message: '' });
+
       // Deep copy the slots to prevent reference issues
       const freshSlots = JSON.parse(JSON.stringify(puzzle.sections[currentSectionIndex].slots));
       setSlots(freshSlots);
-      
+
       // Deep copy and initialize blocks with shuffle
       const freshBlocks = JSON.parse(JSON.stringify(puzzle.sections[currentSectionIndex].blocks));
       shuffleArray(freshBlocks);
       setBlocks(freshBlocks);
-      
+
       console.log('[DEBUG] Section initialized with blocks:', freshBlocks.map((b: CodeBlockType) => b.id));
     }
   }, [currentSectionIndex, puzzle]);
@@ -138,16 +138,16 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
 
   const handleBlockDrop = (blockId: string, slotId: string) => {
     // Update slots state
-    setSlots(prevSlots => 
-      prevSlots.map(slot => 
-        slot.id === slotId 
-          ? { ...slot, filledWithBlockId: blockId } 
+    setSlots(prevSlots =>
+      prevSlots.map(slot =>
+        slot.id === slotId
+          ? { ...slot, filledWithBlockId: blockId }
           : slot
       )
     );
 
     // Remove block from available blocks
-    setBlocks(prevBlocks => 
+    setBlocks(prevBlocks =>
       prevBlocks.filter(block => block.id !== blockId)
     );
   };
@@ -156,10 +156,10 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     if (!blockId) return;
 
     // Update slots state
-    setSlots(prevSlots => 
-      prevSlots.map(slot => 
-        slot.id === slotId 
-          ? { ...slot, filledWithBlockId: null, isIncorrect: false } 
+    setSlots(prevSlots =>
+      prevSlots.map(slot =>
+        slot.id === slotId
+          ? { ...slot, filledWithBlockId: null, isIncorrect: false }
           : slot
       )
     );
@@ -191,7 +191,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   // Handle reset button click
   const handleReset = () => {
     // Reset all slots to empty
-    setSlots(prevSlots => 
+    setSlots(prevSlots =>
       prevSlots.map(slot => ({
         ...slot,
         filledWithBlockId: null,
@@ -199,31 +199,31 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         isIncorrect: false
       }))
     );
-    
+
     // Reset blocks to original state with shuffle
     const sectionBlocks = [...puzzle.sections[currentSectionIndex].blocks];
     shuffleArray(sectionBlocks);
     setBlocks(sectionBlocks);
-    
+
     // Clear any feedback message
-    setFeedbackMessage({type: 'none', message: ''});
-    
+    setFeedbackMessage({ type: 'none', message: '' });
+
     // Ensure transitioning state is reset
     setIsTransitioning(false);
   };
 
   const handleRetry = () => {
     console.log('[DEBUG] handleRetry called');
-    
+
     // First reset all state flags
     setShowRetryOptions(false);
     setIsTransitioning(false);
     setShowErrorAnimation(false);
-    setFeedbackMessage({type: 'none', message: ''});
-    
+    setFeedbackMessage({ type: 'none', message: '' });
+
     // Then reset the slots and blocks
     handleReset();
-    
+
     console.log('[DEBUG] After handleRetry - isTransitioning:', false);
   };
 
@@ -231,11 +231,11 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     console.log('[DEBUG] handleMoveToNext called');
     setShowRetryOptions(false);
     setIsTransitioning(false);
-    
+
     // Explicitly load the next puzzle
     loadNextPuzzle();
-    
-    setFeedbackMessage({type: 'none', message: ''});
+
+    setFeedbackMessage({ type: 'none', message: '' });
   };
 
   const checkSolution = () => {
@@ -244,16 +244,16 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       console.log('[DEBUG] Preventing check - isTransitioning is true');
       return;
     }
-    
+
     // Check if all slots have the correct blocks
-    const isCorrect = slots.every(slot => 
+    const isCorrect = slots.every(slot =>
       slot.filledWithBlockId === slot.correctBlockId
     );
 
-    console.log('[DEBUG] Solution check result:', { 
-      isCorrect, 
-      currentSectionIndex, 
-      totalSections: puzzle.sections.length 
+    console.log('[DEBUG] Solution check result:', {
+      isCorrect,
+      currentSectionIndex,
+      totalSections: puzzle.sections.length
     });
 
     if (isCorrect) {
@@ -263,26 +263,26 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         type: 'success',
         message: 'Great job! That\'s correct.'
       });
-      
+
       // Mark slots as solved
-      setSlots(prevSlots => 
+      setSlots(prevSlots =>
         prevSlots.map(slot => ({ ...slot, isSolved: true }))
       );
 
       // Call correct answer handler
       onCorrectAnswer();
-      
+
       // If there are more sections, move to the next one
       if (currentSectionIndex < puzzle.sections.length - 1) {
         const nextSectionIndex = currentSectionIndex + 1;
         console.log('[DEBUG] Scheduling move to next section after correct answer', { nextSectionIndex });
-        
+
         // Move to next section after a short delay
         setTimeout(() => {
           console.log('[DEBUG] Moving to next section now');
           setCurrentSectionIndex(nextSectionIndex);
           setIsTransitioning(false);
-          setFeedbackMessage({type: 'none', message: ''});
+          setFeedbackMessage({ type: 'none', message: '' });
         }, 800);
       } else {
         // This was the last section, puzzle is complete
@@ -293,13 +293,13 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           // Only call completeEntirePuzzle when the entire puzzle (all sections) is complete
           completeEntirePuzzle(true);
           setIsTransitioning(false);
-          setFeedbackMessage({type: 'none', message: ''});
+          setFeedbackMessage({ type: 'none', message: '' });
         }, 800);
       }
     } else {
       console.log('[DEBUG] Incorrect answer - setting error state');
       // Mark incorrect slots and show error message
-      setSlots(prevSlots => 
+      setSlots(prevSlots =>
         prevSlots.map(slot => ({
           ...slot,
           isIncorrect: slot.filledWithBlockId !== slot.correctBlockId && slot.filledWithBlockId !== null
@@ -309,20 +309,20 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       // Show error message
       setFeedbackMessage({
         type: 'error',
-        message: 'Incorrect! Would you like to try again?'
+        message: "Incorrect! Would you like to try again? (You won't lose any more elo)"
       });
-      
+
       // Play error sound effect
       playErrorSound();
-      
+
       // Trigger error animation
       setShowErrorAnimation(true);
       setTimeout(() => setShowErrorAnimation(false), 700); // Duration of the red-flash animation
-      
+
       // Show retry options
       setShowRetryOptions(true);
       console.log('[DEBUG] Set showRetryOptions:', true);
-      
+
       // Call incorrect answer handler
       onIncorrectAnswer();
 
@@ -335,22 +335,22 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   const renderCodeTemplate = (template: string) => {
     // Replace slot placeholders with actual slot components
     const parts = template.split(/(%SLOT-\d+%)/g);
-    
+
     return parts.map((part, index) => {
       const match = part.match(/%SLOT-(\d+)%/);
       if (match) {
         const slotNumber = match[1];
         const slot = slots.find(s => s.id === `slot-${slotNumber}`);
-        
+
         if (slot) {
           return (
             <span key={index} className="inline-block">
-              <CodeSlot 
+              <CodeSlot
                 slot={slot}
                 onBlockDrop={handleBlockDrop}
                 onReset={handleSlotReset}
-                filledBlock={slot.filledWithBlockId 
-                  ? puzzle.sections[currentSectionIndex].blocks.find(b => b.id === slot.filledWithBlockId) 
+                filledBlock={slot.filledWithBlockId
+                  ? puzzle.sections[currentSectionIndex].blocks.find(b => b.id === slot.filledWithBlockId)
                   : undefined
                 }
                 isIncorrect={slot.isIncorrect}
@@ -360,7 +360,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           );
         }
       }
-      
+
       // Process the code text for syntax highlighting
       return (
         <span key={index} className="whitespace-pre">
@@ -369,12 +369,12 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       );
     });
   };
-  
+
   // Function to apply syntax highlighting by returning React elements
   const syntaxHighlight = (code: string) => {
     // Split the code into parts to highlight
-    const tokens: Array<{type: string, value: string}> = [];
-    
+    const tokens: Array<{ type: string, value: string }> = [];
+
     // Process the code to identify different token types
     let remaining = code;
     while (remaining.length > 0) {
@@ -385,7 +385,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         remaining = remaining.substring(keywordMatch[0].length);
         continue;
       }
-      
+
       // Check for numbers
       const numberMatch = remaining.match(/^\b\d+\b/);
       if (numberMatch) {
@@ -393,7 +393,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         remaining = remaining.substring(numberMatch[0].length);
         continue;
       }
-      
+
       // Check for function calls
       const functionMatch = remaining.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/);
       if (functionMatch) {
@@ -402,7 +402,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         remaining = remaining.substring(functionMatch[0].length);
         continue;
       }
-      
+
       // Check for property access
       const propertyMatch = remaining.match(/^\.([a-zA-Z_$][a-zA-Z0-9_$]*)/);
       if (propertyMatch) {
@@ -411,7 +411,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         remaining = remaining.substring(propertyMatch[0].length);
         continue;
       }
-      
+
       // Check for parameters and variables
       const paramMatch = remaining.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)/);
       if (paramMatch) {
@@ -419,7 +419,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         remaining = remaining.substring(paramMatch[0].length);
         continue;
       }
-      
+
       // Check for operators
       const operatorMatch = remaining.match(/^([+\-*/%=&|^<>!]+)/);
       if (operatorMatch) {
@@ -427,7 +427,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         remaining = remaining.substring(operatorMatch[0].length);
         continue;
       }
-      
+
       // Check for parentheses and brackets
       const bracketMatch = remaining.match(/^[\(\)\[\]\{\}]/);
       if (bracketMatch) {
@@ -435,7 +435,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         remaining = remaining.substring(bracketMatch[0].length);
         continue;
       }
-      
+
       // Check for strings
       const stringMatch = remaining.match(/^"([^"]*)"/) || remaining.match(/^'([^']*)'/);
       if (stringMatch) {
@@ -443,7 +443,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         remaining = remaining.substring(stringMatch[0].length);
         continue;
       }
-      
+
       // Check for comments
       const commentMatch = remaining.match(/^\/\/(.*?)(?:\n|$)/);
       if (commentMatch) {
@@ -451,12 +451,12 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         remaining = remaining.substring(commentMatch[0].length);
         continue;
       }
-      
+
       // If no matches, take the next character as plain text
       tokens.push({ type: 'plain', value: remaining[0] });
       remaining = remaining.substring(1);
     }
-    
+
     // Convert tokens to React elements
     return tokens.map((token, i) => {
       if (token.type === 'plain') {
@@ -482,37 +482,37 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     if (difficulty <= 4) return "Medium";
     return "Hard";
   };
-  
+
   // Get current section
   const currentSection = puzzle.sections[currentSectionIndex];
-  
+
   // Check if submit button should be disabled
   const isSubmitDisabled = !allSlotsFilled || isTransitioning;
-  
+
   // For debugging
   useEffect(() => {
-    console.log('[DEBUG] Submit button state:', { 
-      allSlotsFilled, 
-      isTransitioning, 
+    console.log('[DEBUG] Submit button state:', {
+      allSlotsFilled,
+      isTransitioning,
       showRetryOptions,
       isDisabled: isSubmitDisabled
     });
   }, [allSlotsFilled, isTransitioning, showRetryOptions]);
-  
+
   // Feedback message styling
   const getFeedbackStyle = () => {
     if (feedbackMessage.type === 'success') {
-      return isDarkMode 
-        ? 'bg-green-900/20 text-green-300 border-green-700' 
+      return isDarkMode
+        ? 'bg-green-900/20 text-green-300 border-green-700'
         : 'bg-green-50 text-green-700 border-green-200';
     } else if (feedbackMessage.type === 'error') {
-      return isDarkMode 
-        ? 'bg-red-900/20 text-red-300 border-red-700' 
+      return isDarkMode
+        ? 'bg-red-900/20 text-red-300 border-red-700'
         : 'bg-red-50 text-red-700 border-red-200';
     }
     return 'hidden';
   };
-  
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="leetcode-container pb-4 px-4 md:px-0">
@@ -528,7 +528,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           </div>
           <p className="problem-description text-sm text-gray-600 dark:text-gray-300 mt-2">{puzzle.description}</p>
         </div>
-        
+
         {/* Feedback message */}
         {feedbackMessage.type !== 'none' && (
           <div className={`mb-4 px-4 py-3 rounded-md border text-center ${getFeedbackStyle()} transition-all duration-300 fade-in`}>
@@ -551,27 +551,26 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
             )}
           </div>
         )}
-        
+
         <div className="editor-container mb-4 rounded-lg overflow-hidden shadow-md">
           <div className="editor-header flex justify-between items-center bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center">
-              <span className="mr-2 text-sm text-gray-600 dark:text-gray-400">{currentSection.title}</span>
-              <div className="flex space-x-1">
-                <div className="h-3 w-3 rounded-full bg-red-500"></div>
-                <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-                <div className="h-3 w-3 rounded-full bg-green-500"></div>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {currentSection.title}
+              </span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                Step {currentSectionIndex + 1} of {puzzle.sections.length}
+              </span>
             </div>
             <div className="text-xs text-gray-500">JavaScript</div>
           </div>
-          
+
           <div className="editor-description px-4 py-2 bg-gray-50 dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
             {currentSection.description}
           </div>
-          
-          <div className={`editor-content p-4 font-mono text-sm overflow-x-auto ${
-            isDarkMode ? 'bg-gray-900 text-gray-100 dark-mode' : 'bg-white text-gray-900'
-          } ${showErrorAnimation ? 'red-flash' : ''}`}>
+
+          <div className={`editor-content p-4 font-mono text-sm overflow-x-auto ${isDarkMode ? 'bg-gray-900 text-gray-100 dark-mode' : 'bg-white text-gray-900'
+            } ${showErrorAnimation ? 'red-flash' : ''}`}>
             <div className={`code-area ${isDarkMode ? 'dark-mode' : ''}`}>
               <pre className="text-left">
                 {renderCodeTemplate(currentSection.codeTemplate)}
@@ -579,17 +578,17 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
             </div>
           </div>
         </div>
-        
+
         <div className="available-blocks-container mb-4">
           <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300 flex items-center">
             <span>Available Code Blocks</span>
             <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">({blocks.length} remaining)</span>
           </h3>
-          <div className="block-container flex justify-center flex-wrap" style={{ 
-            minHeight: '60px', 
-            maxHeight: '120px', 
-            overflowY: 'auto', 
-            padding: '4px' 
+          <div className="block-container flex justify-center flex-wrap" style={{
+            minHeight: '60px',
+            maxHeight: '120px',
+            overflowY: 'auto',
+            padding: '4px'
           }}>
             {blocks.map(block => (
               <CodeBlock
@@ -606,28 +605,26 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
             )}
           </div>
         </div>
-        
+
         <div className="flex gap-3 justify-center">
           <button
             onClick={checkSolution}
             disabled={isSubmitDisabled}
-            className={`px-4 py-1.5 rounded-md font-medium text-sm transition-all ${
-              isSubmitDisabled
-                ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
-                : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 shadow-sm'
-            }`}
+            className={`px-4 py-1.5 rounded-md font-medium text-sm transition-all ${isSubmitDisabled
+              ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+              : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 shadow-sm'
+              }`}
           >
             Submit
           </button>
-          
+
           <button
             onClick={handleReset}
             disabled={isTransitioning && !showRetryOptions}
-            className={`px-4 py-1.5 rounded-md font-medium text-sm transition-all ${
-              isTransitioning && !showRetryOptions
-                ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 shadow-sm'
-            }`}
+            className={`px-4 py-1.5 rounded-md font-medium text-sm transition-all ${isTransitioning && !showRetryOptions
+              ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 shadow-sm'
+              }`}
           >
             Reset
           </button>
