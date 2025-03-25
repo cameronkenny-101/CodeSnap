@@ -631,8 +631,6 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
               )}
             </div>
 
-
-
             <div className="flex justify-center gap-3">
               {showRetryOptions && (
                 <>

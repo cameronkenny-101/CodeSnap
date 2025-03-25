@@ -16,6 +16,17 @@ interface PuzzleState {
   resetAllProgress: () => void;
 }
 
+
+const getPuzzlesForElo = (elo: number, allPuzzles: Puzzle[]) => {
+  if (elo <= 500) {
+    return allPuzzles.filter(p => p.difficulty <= 2);
+  } else if (elo <= 1000) {
+    return allPuzzles.filter(p => p.difficulty >= 2 && p.difficulty <= 3);
+  } else {
+    return allPuzzles.filter(p => p.difficulty >= 4);
+  }
+};
+
 const usePuzzleStore = create<PuzzleState>()(
   persist(
     (set, get) => ({
@@ -46,21 +57,20 @@ const usePuzzleStore = create<PuzzleState>()(
 
       loadNextPuzzle: () => {
         const { userProgress } = get();
-        const nextIndex = (userProgress.currentPuzzleIndex + 1) % puzzles.length;
-        const nextPuzzle = JSON.parse(JSON.stringify(puzzles[nextIndex]));
 
-        console.log('[DEBUG] Store loadNextPuzzle:', {
-          fromIndex: userProgress.currentPuzzleIndex,
-          toIndex: nextIndex,
-          puzzleId: nextPuzzle.id,
-          title: nextPuzzle.title
-        });
+        // Get eligible puzzles based on ELO
+        const eligiblePuzzles = getPuzzlesForElo(userProgress.elo, puzzles);
+
+        if (eligiblePuzzles.length === 0) {
+          console.warn('No eligible puzzles found for current ELO:', userProgress.elo);
+          return;
+        }
+
+        // Get a random puzzle from eligible ones
+        const randomIndex = Math.floor(Math.random() * eligiblePuzzles.length);
+        const nextPuzzle = JSON.parse(JSON.stringify(eligiblePuzzles[randomIndex]));
 
         set({
-          userProgress: {
-            ...userProgress,
-            currentPuzzleIndex: nextIndex
-          },
           currentPuzzle: nextPuzzle,
           currentSectionIndex: 0,
           isComplete: false,
@@ -78,29 +88,29 @@ const usePuzzleStore = create<PuzzleState>()(
         });
 
         let newElo = userProgress.elo;
-        
+
         // Only decrease ELO on first failure and only increase if never failed
         if (success && !hasFailedCurrentPuzzle) {
           newElo += 5;
         } else if (!success && !hasFailedCurrentPuzzle) {
           newElo = Math.max(userProgress.elo - 15, 0);
         }
-        
+
         const updatedProgress = {
           ...userProgress,
           elo: newElo
         };
-        
+
         if (success) {
           updatedProgress.solvedPuzzles = [
             ...userProgress.solvedPuzzles,
             currentPuzzle.id
           ];
-          
+
           // Load next puzzle on success
           const nextIndex = (userProgress.currentPuzzleIndex + 1) % puzzles.length;
           const nextPuzzle = JSON.parse(JSON.stringify(puzzles[nextIndex]));
-          
+
           set({
             userProgress: {
               ...updatedProgress,
@@ -112,7 +122,7 @@ const usePuzzleStore = create<PuzzleState>()(
             hasFailedCurrentPuzzle: false,
           });
         } else {
-          set({ 
+          set({
             userProgress: updatedProgress,
             hasFailedCurrentPuzzle: true,
           });
