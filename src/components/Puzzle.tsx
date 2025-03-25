@@ -362,10 +362,110 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         }
       }
       
-      // Return regular code with proper formatting and line breaks
+      // Process the code text for syntax highlighting
       return (
         <span key={index} className="whitespace-pre">
-          {part}
+          {syntaxHighlight(part)}
+        </span>
+      );
+    });
+  };
+  
+  // Function to apply syntax highlighting by returning React elements
+  const syntaxHighlight = (code: string) => {
+    // Split the code into parts to highlight
+    const tokens: Array<{type: string, value: string}> = [];
+    
+    // Process the code to identify different token types
+    let remaining = code;
+    while (remaining.length > 0) {
+      // Check for keywords
+      const keywordMatch = remaining.match(/^\b(function|return|const|let|var|if|else|for|while|do|switch|case|break|continue|new|this|typeof|instanceof)\b/);
+      if (keywordMatch) {
+        tokens.push({ type: 'keyword', value: keywordMatch[0] });
+        remaining = remaining.substring(keywordMatch[0].length);
+        continue;
+      }
+      
+      // Check for numbers
+      const numberMatch = remaining.match(/^\b\d+\b/);
+      if (numberMatch) {
+        tokens.push({ type: 'number', value: numberMatch[0] });
+        remaining = remaining.substring(numberMatch[0].length);
+        continue;
+      }
+      
+      // Check for function calls
+      const functionMatch = remaining.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/);
+      if (functionMatch) {
+        tokens.push({ type: 'function', value: functionMatch[1] });
+        tokens.push({ type: 'plain', value: '(' });
+        remaining = remaining.substring(functionMatch[0].length);
+        continue;
+      }
+      
+      // Check for property access
+      const propertyMatch = remaining.match(/^\.([a-zA-Z_$][a-zA-Z0-9_$]*)/);
+      if (propertyMatch) {
+        tokens.push({ type: 'plain', value: '.' });
+        tokens.push({ type: 'property', value: propertyMatch[1] });
+        remaining = remaining.substring(propertyMatch[0].length);
+        continue;
+      }
+      
+      // Check for parameters and variables
+      const paramMatch = remaining.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)/);
+      if (paramMatch) {
+        tokens.push({ type: 'variable', value: paramMatch[0] });
+        remaining = remaining.substring(paramMatch[0].length);
+        continue;
+      }
+      
+      // Check for operators
+      const operatorMatch = remaining.match(/^([+\-*/%=&|^<>!]+)/);
+      if (operatorMatch) {
+        tokens.push({ type: 'operator', value: operatorMatch[0] });
+        remaining = remaining.substring(operatorMatch[0].length);
+        continue;
+      }
+      
+      // Check for parentheses and brackets
+      const bracketMatch = remaining.match(/^[\(\)\[\]\{\}]/);
+      if (bracketMatch) {
+        tokens.push({ type: 'bracket', value: bracketMatch[0] });
+        remaining = remaining.substring(bracketMatch[0].length);
+        continue;
+      }
+      
+      // Check for strings
+      const stringMatch = remaining.match(/^"([^"]*)"/) || remaining.match(/^'([^']*)'/);
+      if (stringMatch) {
+        tokens.push({ type: 'string', value: stringMatch[0] });
+        remaining = remaining.substring(stringMatch[0].length);
+        continue;
+      }
+      
+      // Check for comments
+      const commentMatch = remaining.match(/^\/\/(.*?)(?:\n|$)/);
+      if (commentMatch) {
+        tokens.push({ type: 'comment', value: commentMatch[0] });
+        remaining = remaining.substring(commentMatch[0].length);
+        continue;
+      }
+      
+      // If no matches, take the next character as plain text
+      tokens.push({ type: 'plain', value: remaining[0] });
+      remaining = remaining.substring(1);
+    }
+    
+    // Convert tokens to React elements
+    return tokens.map((token, i) => {
+      if (token.type === 'plain') {
+        return token.value;
+      }
+      return (
+        <span key={i} className={`js-${token.type}`}>
+          {token.value}
         </span>
       );
     });
@@ -471,10 +571,10 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           </div>
           
           <div className={`editor-content p-4 font-mono text-sm overflow-x-auto ${
-            isDarkMode ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'
+            isDarkMode ? 'bg-gray-900 text-gray-100 dark-mode' : 'bg-white text-gray-900'
           } ${showErrorAnimation ? 'red-flash' : ''}`}>
-            <div className="code-area flex justify-center">
-              <pre className="text-center">
+            <div className={`code-area ${isDarkMode ? 'dark-mode' : ''}`}>
+              <pre className="text-left">
                 {renderCodeTemplate(currentSection.codeTemplate)}
               </pre>
             </div>

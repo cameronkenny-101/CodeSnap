@@ -168,155 +168,127 @@
   min-height: 32px !important;
 }
 
-/* JavaScript Syntax Highlighting */
-.code-syntax {
-  color: #f8f8f2;
+/* JavaScript Syntax Highlighting - VS Code-like theme */
+.js-keyword {
+  color: #569CD6; /* blue for keywords */
 }
 
-/* Keywords */
-.code-syntax .keyword {
-  color: #ff79c6;
+.js-string {
+  color: #CE9178; /* orange-brown for strings */
 }
 
-/* JavaScript syntax highlighting */
-.code-syntax {
-  position: relative;
+.js-number {
+  color: #B5CEA8; /* light green for numbers */
 }
 
-/* Style JavaScript keywords */
-.code-syntax span.keyword {
-  color: #ff79c6;
+.js-function {
+  color: #DCDCAA; /* yellow for function names */
 }
 
-/* Style JavaScript strings */
-.code-syntax span.string {
-  color: #f1fa8c;
+.js-operator {
+  color: #D4D4D4; /* white/light gray for operators */
 }
 
-/* Style JavaScript numbers */
-.code-syntax span.number {
-  color: #bd93f9;
+.js-property {
+  color: #9CDCFE; /* light blue for properties */
 }
 
-/* Style JavaScript comments */
-.code-syntax span.comment {
-  color: #6272a4;
+.js-variable {
+  color: #9CDCFE; /* light blue for variables */
 }
 
-/* Style JavaScript operators */
-.code-syntax span.operator {
-  color: #ff79c6;
+.js-bracket {
+  color: #D4D4D4; /* white/light gray for brackets */
 }
 
-/* Style JavaScript functions */
-.code-syntax span.function {
-  color: #50fa7b;
+.js-comment {
+  color: #6A9955; /* green for comments */
+  font-style: italic;
 }
 
-/* Style JavaScript variables */
-.code-syntax span.variable {
-  color: #f8f8f2;
+/* Dark theme specific colors - Enhanced for better contrast */
+body.dark .js-keyword,
+.dark .js-keyword {
+  color: #569CD6 !important; /* bright blue */
 }
 
-/* Style JavaScript parentheses/brackets */
-.code-syntax span.bracket {
-  color: #f8f8f2;
+body.dark .js-string,
+.dark .js-string {
+  color: #CE9178 !important; /* orange-brown */
 }
 
-/* Apply syntax highlighting to code blocks */
-.code-syntax {
-  display: inline-block;
+body.dark .js-number,
+.dark .js-number {
+  color: #B5CEA8 !important; /* light green */
 }
 
-/* Apply JavaScript-like coloring to specific patterns */
-.code-syntax .js-keyword {
-  color: #ff79c6;
+body.dark .js-function,
+.dark .js-function {
+  color: #DCDCAA !important; /* bright yellow */
 }
 
-.code-syntax .js-string {
-  color: #f1fa8c;
+body.dark .js-operator,
+.dark .js-operator {
+  color: #D4D4D4 !important; /* bright white */
 }
 
-.code-syntax .js-number {
-  color: #bd93f9;
+body.dark .js-property,
+.dark .js-property {
+  color: #9CDCFE !important; /* bright light blue */
 }
 
-.code-syntax .js-function {
-  color: #50fa7b;
+body.dark .js-variable,
+.dark .js-variable {
+  color: #9CDCFE !important; /* bright light blue */
 }
 
-.code-syntax .js-operator {
-  color: #ff79c6;
+body.dark .js-bracket,
+.dark .js-bracket {
+  color: #D4D4D4 !important; /* bright white */
 }
 
-.code-syntax .js-parenthesis {
-  color: #f8f8f2;
+body.dark .js-comment,
+.dark .js-comment {
+  color: #6A9955 !important; /* green */
+  font-style: italic;
 }
 
-.code-syntax .js-property {
-  color: #8be9fd;
+/* Light theme specific colors */
+:not(.dark) .js-keyword {
+  color: #0000FF; /* blue */
 }
 
-/* Make the code blocks look like JS */
-.code-syntax {
-  background-color: transparent;
-  color: var(--color-text);
+:not(.dark) .js-string {
+  color: #A31515; /* darker red for strings */
 }
 
-/* Dark theme syntax highlighting */
-.dark .code-syntax {
-  color: #f8f8f2;
+:not(.dark) .js-number {
+  color: #098658; /* green for numbers */
 }
 
-.dark .code-syntax .keyword,
-.dark .code-syntax .js-keyword {
-  color: #ff79c6; /* pink */
+:not(.dark) .js-function {
+  color: #795E26; /* brown for function names */
 }
 
-.dark .code-syntax .js-function {
-  color: #50fa7b; /* green */
+:not(.dark) .js-property {
+  color: #001080; /* dark blue for properties */
 }
 
-.dark .code-syntax .js-number {
-  color: #bd93f9; /* purple */
+:not(.dark) .js-variable {
+  color: #001080; /* dark blue for variables */
 }
 
-.dark .code-syntax .js-string {
-  color: #f1fa8c; /* yellow */
+:not(.dark) .js-operator {
+  color: #000000; /* black for operators */
 }
 
-.dark .code-syntax .js-operator {
-  color: #ff79c6; /* pink */
+:not(.dark) .js-bracket {
+  color: #000000; /* black for brackets */
 }
 
-.dark .code-syntax .js-property {
-  color: #8be9fd; /* cyan */
-}
-
-/* Light theme syntax highlighting */
-.code-syntax .keyword,
-.code-syntax .js-keyword {
-  color: #d32f2f; /* red */
-}
-
-.code-syntax .js-function {
-  color: #388e3c; /* green */
-}
-
-.code-syntax .js-number {
-  color: #7b1fa2; /* purple */
-}
-
-.code-syntax .js-string {
-  color: #f57f17; /* yellow/orange */
-}
-
-.code-syntax .js-operator {
-  color: #0277bd; /* blue */
-}
-
-.code-syntax .js-property {
-  color: #0288d1; /* cyan */
+:not(.dark) .js-comment {
+  color: #008000; /* green for comments */
+  font-style: italic;
 }
 
 /* Responsive Design */
@@ -374,4 +346,103 @@
     width: 100% !important;
     max-width: 85vw !important;
   }
+}
+
+/* Code area with IDE-like styling */
+.code-area {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 0.5rem;
+  margin: 0;
+  text-align: left;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  width: 100%;
+}
+
+.code-area pre {
+  margin: 0;
+  text-align: left;
+  white-space: pre;
+  font-family: inherit;
+  padding-left: 1rem;
+}
+
+/* Add line numbers effect */
+.code-area pre {
+  counter-reset: line;
+  padding-left: 2.5rem; /* Space for line numbers */
+  position: relative;
+}
+
+.code-area pre:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2rem;
+  background: rgba(128, 128, 128, 0.1);
+  border-right: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+/* Make selected slots more prominent */
+.code-slot {
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.code-slot:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+/* JavaScript syntax highlighting enhancements */
+.js-comment {
+  color: #6272a4 !important;
+  font-style: italic;
+}
+
+/* Dark-mode specific class with higher contrast colors */
+.dark-mode .js-keyword {
+  color: #569CD6 !important; /* bright blue */
+}
+
+.dark-mode .js-string {
+  color: #CE9178 !important; /* orange-brown */
+}
+
+.dark-mode .js-number {
+  color: #B5CEA8 !important; /* light green */
+}
+
+.dark-mode .js-function {
+  color: #DCDCAA !important; /* bright yellow */
+}
+
+.dark-mode .js-operator {
+  color: #ffffff !important; /* pure white for maximum contrast */
+}
+
+.dark-mode .js-property {
+  color: #9CDCFE !important; /* bright light blue */
+}
+
+.dark-mode .js-variable {
+  color: #9CDCFE !important; /* bright light blue */
+}
+
+.dark-mode .js-bracket {
+  color: #ffffff !important; /* pure white */
+}
+
+.dark-mode .js-comment {
+  color: #6A9955 !important; /* green */
+  font-style: italic;
+}
+
+/* Increase contrast for code area in dark mode */
+.dark-mode.code-area,
+.dark-mode .code-area {
+  background-color: #1E1E1E !important; /* VS Code dark theme background */
+  color: #D4D4D4 !important; /* VS Code dark theme foreground */
 }

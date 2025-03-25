@@ -96,7 +96,7 @@ const CodeSlot = ({ slot, onBlockDrop, onReset, filledBlock, isIncorrect, onSlot
   
   // Filled slot content
   const filledContent = filledBlock ? (
-    <span className="text-xs font-mono">
+    <span className="text-xs font-mono font-medium">
       {filledBlock.content}
     </span>
   ) : null;
