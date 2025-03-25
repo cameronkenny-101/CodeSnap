@@ -7,6 +7,7 @@ import './App.css'
 import Puzzle from './components/Puzzle'
 import usePuzzleStore from './store/usePuzzles'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
+import DeveloperPanel from './components/DeveloperPanel'
 
 // Determine which backend to use based on device type
 const backendOptions = {
@@ -79,9 +80,14 @@ function AppContent() {
         </DndProvider>
       </main>
 
+      {puzzleStore.isDeveloperMode && <DeveloperPanel />}
+
       <footer className={`py-3 mt-auto ${isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-600'}`}>
         <div className="container mx-auto px-4 text-center text-xs">
           &copy; {new Date().getFullYear()} CodeSnap - Learn coding through puzzles
+        </div>
+        <div className="text-xs opacity-50 cursor-pointer" onClick={puzzleStore.toggleDeveloperMode}>
+          v1.0.0
         </div>
       </footer>
     </div>

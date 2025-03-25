@@ -8,12 +8,19 @@ interface PuzzleState {
   userProgress: UserProgress;
   isComplete: boolean;
   hasFailedCurrentPuzzle: boolean;
+  isDeveloperMode: boolean;
+  developerSettings: {
+    forceCorrect: boolean;
+    customElo: number | null;
+  };
 
   loadPuzzle: () => void;
   loadNextPuzzle: () => void;
   completeEntirePuzzle: (success: boolean) => void;
   resetCurrentPuzzle: () => void;
   resetAllProgress: () => void;
+  toggleDeveloperMode: () => void;
+  updateDeveloperSettings: (settings: Partial<PuzzleState['developerSettings']>) => void;
 }
 
 
@@ -35,6 +42,11 @@ const usePuzzleStore = create<PuzzleState>()(
       userProgress: initialUserProgress,
       isComplete: false,
       hasFailedCurrentPuzzle: false,
+      isDeveloperMode: false,
+      developerSettings: {
+        forceCorrect: false,
+        customElo: null
+      },
 
       loadPuzzle: () => {
         const { userProgress } = get();
@@ -79,21 +91,27 @@ const usePuzzleStore = create<PuzzleState>()(
       },
 
       completeEntirePuzzle: (success: boolean) => {
-        const { currentPuzzle, userProgress, hasFailedCurrentPuzzle } = get();
+        const { currentPuzzle, userProgress, hasFailedCurrentPuzzle, developerSettings } = get();
         if (!currentPuzzle) return;
 
-        console.log('[DEBUG] Store completeEntirePuzzle called with success:', success, {
+        // If developer mode is forcing correct answers, always treat as success
+        const isSuccess = developerSettings.forceCorrect ? true : success;
+
+        console.log('[DEBUG] Store completeEntirePuzzle called with success:', isSuccess, {
           puzzleId: currentPuzzle.id,
-          title: currentPuzzle.title
+          title: currentPuzzle.title,
+          forceCorrect: developerSettings.forceCorrect
         });
 
         let newElo = userProgress.elo;
 
-        // Only decrease ELO on first failure and only increase if never failed
-        if (success && !hasFailedCurrentPuzzle) {
-          newElo += 5;
-        } else if (!success && !hasFailedCurrentPuzzle) {
-          newElo = Math.max(userProgress.elo - 15, 0);
+        // Only modify ELO if we're not using a custom ELO
+        if (developerSettings.customElo === null) {
+          if (isSuccess && !hasFailedCurrentPuzzle) {
+            newElo += 5;
+          } else if (!isSuccess && !hasFailedCurrentPuzzle) {
+            newElo = Math.max(userProgress.elo - 15, 0);
+          }
         }
 
         const updatedProgress = {
@@ -101,7 +119,7 @@ const usePuzzleStore = create<PuzzleState>()(
           elo: newElo
         };
 
-        if (success) {
+        if (isSuccess) {
           updatedProgress.solvedPuzzles = [
             ...userProgress.solvedPuzzles,
             currentPuzzle.id
@@ -154,6 +172,34 @@ const usePuzzleStore = create<PuzzleState>()(
           isComplete: false,
         });
         get().loadPuzzle();
+      },
+
+      toggleDeveloperMode: () => {
+        set(state => ({ isDeveloperMode: !state.isDeveloperMode }));
+      },
+
+      updateDeveloperSettings: (settings) => {
+        const { userProgress } = get();
+        set(state => {
+          const newSettings = {
+            ...state.developerSettings,
+            ...settings
+          };
+
+          // If customElo is set, immediately update the user's ELO
+          if (settings.customElo !== undefined) {
+            set({
+              userProgress: {
+                ...userProgress,
+                elo: settings.customElo ?? userProgress.elo
+              }
+            });
+          }
+
+          return {
+            developerSettings: newSettings
+          };
+        });
       }
     }),
     {

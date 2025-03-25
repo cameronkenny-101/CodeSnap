@@ -20,6 +20,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   const {
     loadNextPuzzle,
     completeEntirePuzzle,
+    developerSettings
   } = usePuzzleStore();
 
   const [slots, setSlots] = useState(puzzle.sections[puzzle.currentSectionIndex].slots);
@@ -34,6 +35,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   const [showRetryOptions, setShowRetryOptions] = useState(false);
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
   const [isLoadingNext, setIsLoadingNext] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize puzzle state
   const initializePuzzleState = () => {
@@ -239,22 +241,16 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   };
 
   const checkSolution = () => {
-    console.log('[DEBUG] checkSolution called');
-    if (isTransitioning) {
-      console.log('[DEBUG] Preventing check - isTransitioning is true');
-      return;
-    }
+    if (!currentSection) return;
 
-    // Check if all slots have the correct blocks
-    const isCorrect = slots.every(slot =>
-      slot.filledWithBlockId === slot.correctBlockId
-    );
+    // If force correct is enabled, skip the actual check
+    const isCorrect = developerSettings.forceCorrect ? true : 
+      slots.every((slot) => {
+        const block = blocks.find((b) => b.id === slot.filledWithBlockId);
+        return block?.correctSlotId === slot.id;
+      });
 
-    console.log('[DEBUG] Solution check result:', {
-      isCorrect,
-      currentSectionIndex,
-      totalSections: puzzle.sections.length
-    });
+    setIsSubmitting(true);
 
     if (isCorrect) {
       setIsTransitioning(true);
