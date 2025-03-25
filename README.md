@@ -67,3 +67,6 @@ The application is fully responsive and works on both desktop and mobile devices
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## GitHub Pages
+This app is deployed to GitHub Pages at https://cameronkenny-101.github.io/CodeSnap/
