@@ -303,7 +303,7 @@ export const puzzles: Puzzle[] = [
     ]
   },
   {
-    id: 'longest-common-subsequence',
+    id: 'lcs',
     title: 'Longest Common Subsequence',
     description: 'Build a dynamic programming solution to find the longest common subsequence between two strings.',
     difficulty: 5,
@@ -800,6 +800,283 @@ export const puzzles: Puzzle[] = [
           }
         ],
         isVisible: false
+      }
+    ]
+  },
+  {
+    id: 'two-sum',
+    title: 'Two Sum Algorithm',
+    description: 'Complete the two sum algorithm by filling in the missing logic.',
+    difficulty: 1,
+    currentSectionIndex: 0,
+    sections: [
+      {
+        id: 'two-sum-init',
+        title: 'Initialize the HashMap',
+        description: 'Start by creating a hash map to store seen numbers.',
+        codeTemplate: `function twoSum(nums, target) {
+  let map = %SLOT-1%;
+  
+  for (let i = 0; i < nums.length; i++) {
+    // To be continued...
+  }
+}`,
+        slots: [
+          {
+            id: 'slot-1',
+            correctBlockId: 'block-1',
+            filledWithBlockId: null,
+            isSolved: false
+          }
+        ],
+        blocks: [
+          {
+            id: 'block-1',
+            content: '{}',
+            isCorrect: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-2',
+            content: '[]',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-3',
+            content: 'new Map()',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          }
+        ],
+        isVisible: true
+      },
+      {
+        id: 'two-sum-lookup',
+        title: 'Check if Complement Exists',
+        description: 'Now, check if the complement is already in the map.',
+        codeTemplate: `function twoSum(nums, target) {
+  let map = {};
+
+  for (let i = 0; i < nums.length; i++) {
+    let complement = %SLOT-1%;
+
+    if (%SLOT-2%) {
+      return [map[complement], i];
+    }
+    map[nums[i]] = i;
+  }
+}`,
+        slots: [
+          {
+            id: 'slot-1',
+            correctBlockId: 'block-1',
+            filledWithBlockId: null,
+            isSolved: false
+          },
+          {
+            id: 'slot-2',
+            correctBlockId: 'block-4',
+            filledWithBlockId: null,
+            isSolved: false
+          }
+        ],
+        blocks: [
+          {
+            id: 'block-1',
+            content: 'target - nums[i]',
+            isCorrect: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-2',
+            content: 'target + nums[i]',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-3',
+            content: 'nums[i] - target',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-4',
+            content: 'complement in map',
+            isCorrect: true,
+            slotId: 'slot-2'
+          },
+          {
+            id: 'block-5',
+            content: 'map.includes(complement)',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-2'
+          },
+          {
+            id: 'block-6',
+            content: 'map.hasOwnProperty(complement)',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-2'
+          }
+        ],
+        isVisible: false
+      }
+    ]
+  },
+  {
+    id: 'merge-intervals',
+    title: 'Merge Overlapping Intervals',
+    description: 'Fill in the missing logic to merge overlapping intervals.',
+    difficulty: 3,
+    currentSectionIndex: 0,
+    sections: [
+      {
+        id: 'merge-sort',
+        title: 'Sort the Intervals',
+        description: 'Start by sorting the intervals based on start times.',
+        codeTemplate: `function mergeIntervals(intervals) {
+  intervals.sort((a, b) => %SLOT-1%);
+  let merged = [];
+  // To be continued...
+}`,
+        slots: [
+          {
+            id: 'slot-1',
+            correctBlockId: 'block-1',
+            filledWithBlockId: null,
+            isSolved: false
+          }
+        ],
+        blocks: [
+          {
+            id: 'block-1',
+            content: 'a[0] - b[0]',
+            isCorrect: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-2',
+            content: 'b[0] - a[0]',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-3',
+            content: 'Math.min(a[0], b[0])',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          }
+        ],
+        isVisible: true
+      },
+      {
+        id: 'merge-loop',
+        title: 'Merge the Intervals',
+        description: 'Loop through the intervals and merge overlapping ones.',
+        codeTemplate: `function mergeIntervals(intervals) {
+  intervals.sort((a, b) => a[0] - b[0]);
+  let merged = [intervals[0]];
+
+  for (let i = 1; i < intervals.length; i++) {
+    let last = merged[merged.length - 1];
+    if (%SLOT-1%) {
+      last[1] = Math.max(last[1], intervals[i][1]);
+    } else {
+      merged.push(intervals[i]);
+    }
+  }
+  return merged;
+}`,
+        slots: [
+          {
+            id: 'slot-1',
+            correctBlockId: 'block-1',
+            filledWithBlockId: null,
+            isSolved: false
+          }
+        ],
+        blocks: [
+          {
+            id: 'block-1',
+            content: 'intervals[i][0] <= last[1]',
+            isCorrect: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-2',
+            content: 'intervals[i][1] >= last[0]',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-3',
+            content: 'last[1] >= intervals[i][0]',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          }
+        ],
+        isVisible: false
+      }
+    ]
+  },
+  {
+    id: 'dijkstra',
+    title: "Dijkstra's Algorithm",
+    description: 'Find the shortest path from the source node in a weighted graph.',
+    difficulty: 5,
+    currentSectionIndex: 0,
+    sections: [
+      {
+        id: 'initialize-queue',
+        title: 'Initialize the Priority Queue',
+        description: 'Start by initializing the min-heap priority queue.',
+        codeTemplate: `function dijkstra(graph, start) {
+  let distances = {};
+  let queue = new PriorityQueue((a, b) => %SLOT-1%);
+  queue.enqueue([start, 0]);
+  // To be continued...
+}`,
+        slots: [
+          {
+            id: 'slot-1',
+            correctBlockId: 'block-1',
+            filledWithBlockId: null,
+            isSolved: false
+          }
+        ],
+        blocks: [
+          {
+            id: 'block-1',
+            content: 'a[1] - b[1]',
+            isCorrect: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-2',
+            content: 'b[1] - a[1]',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          },
+          {
+            id: 'block-3',
+            content: 'Math.min(a[1], b[1])',
+            isCorrect: false,
+            isDecoy: true,
+            slotId: 'slot-1'
+          }
+        ],
+        isVisible: true
       }
     ]
   }
