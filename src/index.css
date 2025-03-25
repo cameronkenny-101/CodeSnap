@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-dark-800 dark:bg-dark-900 dark:text-gray-100;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  code, pre {
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  }
+}
+
+@layer components {
+  .editor-container {
+    @apply rounded-lg overflow-hidden shadow-md border border-gray-200 dark:border-dark-700 bg-white dark:bg-dark-800;
+  }
+  
+  .editor-header {
+    @apply bg-gray-100 dark:bg-dark-700 border-b border-gray-200 dark:border-dark-600 px-4 py-2 flex justify-between items-center;
+  }
+  
+  .editor-content {
+    @apply bg-white dark:bg-dark-800 p-4 overflow-auto;
+  }
+  
+  .code-area {
+    @apply font-mono text-sm leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-gray-200;
+  }
+  
+  .line-numbers {
+    @apply text-gray-400 dark:text-gray-500 select-none pr-4 text-right;
+  }
+  
+  .code-block {
+    @apply bg-gray-100 px-2 py-1 rounded border border-gray-300 cursor-move shadow-sm text-sm
+           dark:bg-dark-800 dark:border-dark-700 dark:text-gray-100 inline-block mx-1 my-1;
+  }
+  
+  .code-slot {
+    @apply bg-gray-100 px-2 py-1 rounded border border-gray-300 min-h-[1.5rem] inline-flex items-center
+           dark:bg-dark-800 dark:border-dark-700 dark:text-gray-300 min-w-[80px] max-w-fit;
+  }
+
+  .unlock-button {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-bold py-2 px-4 rounded transition-colors
+           dark:bg-primary-600 dark:hover:bg-primary-700;
+  }
+
+  .run-button {
+    @apply bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition-colors
+           dark:bg-green-600 dark:hover:bg-green-700;
+  }
+  
+  .leetcode-container {
+    @apply max-w-4xl mx-auto;
+  }
+  
+  .problem-title {
+    @apply text-xl font-semibold text-gray-900 dark:text-white mb-2;
+  }
+  
+  .problem-difficulty {
+    @apply text-xs font-medium px-2 py-1 rounded-full;
+  }
+  
+  .difficulty-easy {
+    @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300;
+  }
+  
+  .difficulty-medium {
+    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300;
+  }
+  
+  .difficulty-hard {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300;
+  }
+  
+  .problem-description {
+    @apply text-gray-700 dark:text-gray-300 mb-4;
+  }
+  
+  .code-line {
+    @apply flex;
+  }
+  
+  .available-blocks-container {
+    @apply bg-gray-50 dark:bg-dark-700 p-3 rounded-lg border border-gray-200 dark:border-dark-600 mt-4;
+  }
+  
+  .block-container {
+    @apply flex flex-wrap gap-2 mt-2;
+  }
+}
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

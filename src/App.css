@@ -1,0 +1,477 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+:root {
+  --dark-bg: #1e293b;
+  --light-bg: #f8fafc;
+  --dark-text: #f8fafc;
+  --light-text: #0f172a;
+}
+
+/* LeetCode-style UI */
+.leetcode-container {
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+.problem-title {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.problem-difficulty {
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.editor-container {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid;
+}
+
+.editor-content {
+  padding: 1rem;
+  font-family: monospace;
+  overflow: auto;
+  min-height: 200px;
+  max-height: 300px;
+}
+
+/* Code area with centered content */
+.code-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.code-area pre {
+  text-align: center;
+  display: inline-block;
+  margin: 0 auto;
+}
+
+/* Block container with centered content */
+.block-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  overflow-y: auto;
+  min-height: 60px;
+  height: 100px;
+  max-height: 120px;
+}
+
+.dark .block-container {
+  border-color: #334155;
+  background-color: #1e293b;
+}
+
+/* Mobile optimization for blocks */
+@media (max-width: 640px) {
+  .leetcode-container {
+    padding: 0.5rem;
+  }
+  
+  .problem-title {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+  
+  .editor-content {
+    padding: 0.5rem;
+  }
+}
+
+/* Animation for incorrect answer */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Fade animations for transitions */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .editor-container {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+  
+  .code-area {
+    font-size: 0.8rem;
+  }
+  
+  #root {
+    padding: 0.5rem;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Transitions for feedback */
+.transition-feedback {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.feedback-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.feedback-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.feedback-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.feedback-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Prevent size changes during drag operations */
+.react-dnd-dragging {
+  position: fixed;
+  pointer-events: none;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 150px !important;
+  min-height: 32px !important;
+}
+
+/* JavaScript Syntax Highlighting */
+.code-syntax {
+  color: #f8f8f2;
+}
+
+/* Keywords */
+.code-syntax .keyword {
+  color: #ff79c6;
+}
+
+/* JavaScript syntax highlighting */
+.code-syntax {
+  position: relative;
+}
+
+/* Style JavaScript keywords */
+.code-syntax span.keyword {
+  color: #ff79c6;
+}
+
+/* Style JavaScript strings */
+.code-syntax span.string {
+  color: #f1fa8c;
+}
+
+/* Style JavaScript numbers */
+.code-syntax span.number {
+  color: #bd93f9;
+}
+
+/* Style JavaScript comments */
+.code-syntax span.comment {
+  color: #6272a4;
+}
+
+/* Style JavaScript operators */
+.code-syntax span.operator {
+  color: #ff79c6;
+}
+
+/* Style JavaScript functions */
+.code-syntax span.function {
+  color: #50fa7b;
+}
+
+/* Style JavaScript variables */
+.code-syntax span.variable {
+  color: #f8f8f2;
+}
+
+/* Style JavaScript parentheses/brackets */
+.code-syntax span.bracket {
+  color: #f8f8f2;
+}
+
+/* Apply syntax highlighting to code blocks */
+.code-syntax {
+  display: inline-block;
+}
+
+/* Apply JavaScript-like coloring to specific patterns */
+.code-syntax .js-keyword {
+  color: #ff79c6;
+}
+
+.code-syntax .js-string {
+  color: #f1fa8c;
+}
+
+.code-syntax .js-number {
+  color: #bd93f9;
+}
+
+.code-syntax .js-function {
+  color: #50fa7b;
+}
+
+.code-syntax .js-operator {
+  color: #ff79c6;
+}
+
+.code-syntax .js-parenthesis {
+  color: #f8f8f2;
+}
+
+.code-syntax .js-property {
+  color: #8be9fd;
+}
+
+/* Make the code blocks look like JS */
+.code-syntax {
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+/* Dark theme syntax highlighting */
+.dark .code-syntax {
+  color: #f8f8f2;
+}
+
+.dark .code-syntax .keyword,
+.dark .code-syntax .js-keyword {
+  color: #ff79c6; /* pink */
+}
+
+.dark .code-syntax .js-function {
+  color: #50fa7b; /* green */
+}
+
+.dark .code-syntax .js-number {
+  color: #bd93f9; /* purple */
+}
+
+.dark .code-syntax .js-string {
+  color: #f1fa8c; /* yellow */
+}
+
+.dark .code-syntax .js-operator {
+  color: #ff79c6; /* pink */
+}
+
+.dark .code-syntax .js-property {
+  color: #8be9fd; /* cyan */
+}
+
+/* Light theme syntax highlighting */
+.code-syntax .keyword,
+.code-syntax .js-keyword {
+  color: #d32f2f; /* red */
+}
+
+.code-syntax .js-function {
+  color: #388e3c; /* green */
+}
+
+.code-syntax .js-number {
+  color: #7b1fa2; /* purple */
+}
+
+.code-syntax .js-string {
+  color: #f57f17; /* yellow/orange */
+}
+
+.code-syntax .js-operator {
+  color: #0277bd; /* blue */
+}
+
+.code-syntax .js-property {
+  color: #0288d1; /* cyan */
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .leetcode-container {
+    padding: 0.5rem;
+  }
+  
+  .problem-title {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+  
+  .editor-content {
+    padding: 0.5rem;
+  }
+  
+  .block-container {
+    padding: 0.25rem;
+    gap: 0.25rem;
+  }
+  
+  /* Make code blocks and slots more responsive on mobile */
+  .react-dnd-dragging,
+  .code-slot,
+  .code-block {
+    width: auto !important;
+    max-width: 90vw !important;
+  }
+}
+
+/* Add media query for smaller screens */
+@media (max-width: 480px) {
+  #root {
+    padding: 0.25rem;
+  }
+  
+  .leetcode-container {
+    padding: 0.25rem;
+  }
+  
+  .editor-header {
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .editor-content {
+    padding: 0.25rem;
+    min-height: 200px;
+    max-height: 250px;
+  }
+  
+  .react-dnd-dragging,
+  .code-slot,
+  .code-block {
+    width: 100% !important;
+    max-width: 85vw !important;
+  }
+}
