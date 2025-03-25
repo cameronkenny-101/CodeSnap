@@ -243,10 +243,10 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     if (!currentSection) return;
 
     // If force correct is enabled, skip the actual check
-    const isCorrect = developerSettings.forceCorrect ? true : 
+    const isCorrect = developerSettings.forceCorrect ? true :
       slots.every((slot) => {
-        const block = blocks.find((b) => b.id === slot.filledWithBlockId);
-        return block?.slotId === slot.id;
+        const correctBlockId = slot.correctBlockId;
+        return slot.filledWithBlockId === correctBlockId;
       });
 
     if (isCorrect) {

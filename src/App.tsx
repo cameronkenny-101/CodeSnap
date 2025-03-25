@@ -28,7 +28,7 @@ function AppContent() {
     // Log puzzle information for debugging
     console.log("App init - Total puzzles available:", puzzles.length);
     console.log("App init - All puzzle titles:", puzzles.map(p => p.title));
-    
+
     if (!puzzleStore.currentPuzzle) {
       puzzleStore.loadPuzzle()
     }
@@ -85,13 +85,13 @@ function AppContent() {
       {/* Puzzle List Modal */}
       {showPuzzleList && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" onClick={() => setShowPuzzleList(false)}>
-          <div 
+          <div
             className={`w-full max-w-md max-h-[80vh] overflow-y-auto rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-4 shadow-xl`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">All Puzzles</h2>
-              <button 
+              <button
                 onClick={() => setShowPuzzleList(false)}
                 className="text-lg"
               >
@@ -100,8 +100,8 @@ function AppContent() {
             </div>
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {puzzles.map((puzzle, index) => (
-                <div 
-                  key={puzzle.id} 
+                <div
+                  key={puzzle.id}
                   className={`py-3 px-2 ${index === puzzleStore.userProgress.currentPuzzleIndex ? 'bg-blue-50 dark:bg-blue-900/30 rounded' : ''}`}
                   onClick={() => {
                     puzzleStore.loadPuzzleByIndex(index);
