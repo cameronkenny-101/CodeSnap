@@ -280,10 +280,11 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         // Move to next section after a short delay
         setTimeout(() => {
           console.log('[DEBUG] Moving to next section now');
+          setIsLoadingNext(true);
           setCurrentSectionIndex(nextSectionIndex);
           setIsTransitioning(false);
           setFeedbackMessage({ type: 'none', message: '' });
-        }, 800);
+        }, 1200);
       } else {
         // This was the last section, puzzle is complete
         console.log('[DEBUG] Scheduling puzzle completion (success)');
@@ -623,35 +624,38 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
             } transition-all duration-300 fade-in`}>
             <div className="text-center text-lg mb-4">
               {feedbackMessage.message}
-              {isLoadingNext && (
+              {isLoadingNext && !showRetryOptions && (
                 <div className="mt-2">
                   <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-t-transparent border-current"></div>
                 </div>
               )}
             </div>
 
+
+
             <div className="flex justify-center gap-3">
               {showRetryOptions && (
-                <button
-                  onClick={handleRetry}
-                  className="px-4 py-2 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
-                >
-                  Try Again
-                </button>
-              )}
-              {!isLoadingNext && (
-                <button
-                  onClick={handleMoveToNext}
-                  className="px-4 py-2 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
-                >
-                  Next Puzzle
-                </button>
-              )}
+                <>
+                  <button
+                    onClick={handleRetry}
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
+                  >
+                    Try Again
+                  </button>
+
+                  <button
+                    onClick={handleMoveToNext}
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Next Puzzle
+                  </button>
+                </>)}
             </div>
           </div>
         </div>
-      )}
-    </DndProvider>
+      )
+      }
+    </DndProvider >
   );
 };
 
