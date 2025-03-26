@@ -18,6 +18,29 @@ const backendOptions = {
 }
 const dndBackend = isTouchDevice() ? TouchBackend : HTML5Backend
 
+// Helper function to get clean description for menu display
+const getCleanDescription = (description: string) => {
+  // Get only the text before the example section or HTML
+  let mainDescription = description;
+  
+  // If there's an HTML tag or example section, only take text before it
+  if (description.includes('<div class="leetcode-example">')) {
+    mainDescription = description.split('<div class="leetcode-example">')[0];
+  } else if (description.includes('\n\n')) {
+    mainDescription = description.split('\n\n')[0];
+  }
+  
+  // Remove any remaining HTML tags
+  mainDescription = mainDescription.replace(/<\/?[^>]+(>|$)/g, '');
+  
+  // Truncate if too long
+  if (mainDescription.length > 120) {
+    return mainDescription.substring(0, 120) + '...';
+  }
+  
+  return mainDescription;
+};
+
 function AppContent() {
   const { isDarkMode, toggleTheme } = useTheme()
   const puzzleStore = usePuzzleStore()
@@ -124,7 +147,9 @@ function AppContent() {
                           : "Hard"}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{puzzle.description}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    {getCleanDescription(puzzle.description)}
+                  </p>
                   {puzzleStore.userProgress.solvedPuzzles.includes(puzzle.id) && (
                     <span className="text-xs text-green-600 dark:text-green-400 mt-1 inline-block">
                       ✓ Solved

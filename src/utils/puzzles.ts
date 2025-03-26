@@ -44,7 +44,7 @@ export const puzzles: Puzzle[] = [
   {
     id: 'binary-search',
     title: 'Binary Search Algorithm',
-    description: 'Complete the binary search algorithm by filling in the missing logic. \n\nExample Input: arr = [1, 3, 5, 7, 9], target = 5 \nExample Output: 2 (index where target was found)',
+    description: 'Complete the binary search algorithm by filling in the missing logic.\n\n<div class="leetcode-example"><div class="example-header">Example 1</div><div class="example-content"><div class="example-section"><div class="example-section-title">Input:</div><pre class="example-code">arr = [1, 3, 5, 7, 9]\ntarget = 5</pre></div><div class="example-section"><div class="example-section-title">Output:</div><pre class="example-code">2</pre></div><div class="example-section"><div class="example-section-title">Explanation:</div><div class="text-sm">The target value 5 is found at index 2 in the array. Binary search efficiently finds this by comparing the middle element and narrowing the search range by half in each step.</div></div></div></div>',
     difficulty: 3,
     currentSectionIndex: 0,
     sections: [

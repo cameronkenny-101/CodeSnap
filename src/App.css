@@ -651,29 +651,43 @@ body.dark .js-comment,
 
 /* LeetCode-style example formatting */
 .leetcode-example {
-  margin: 1rem 0;
+  margin: 1.25rem 0;
   border-radius: 0.5rem;
   overflow: hidden;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   background-color: #f9fafb;
+  transition: all 0.2s ease;
+}
+
+.leetcode-example:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
 }
 
 .dark .leetcode-example {
   background-color: #1e293b;
   border-color: #334155;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.dark .leetcode-example:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 .example-header {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
   background-color: #f3f4f6;
   border-bottom: 1px solid #e5e7eb;
   font-weight: 600;
   font-size: 0.9rem;
+  color: #4b5563;
 }
 
 .dark .example-header {
   background-color: #334155;
   border-color: #475569;
+  color: #e5e7eb;
 }
 
 .example-content {
@@ -681,13 +695,18 @@ body.dark .js-comment,
 }
 
 .example-section {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.example-section:last-child {
+  margin-bottom: 0;
 }
 
 .example-section-title {
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
   color: #4b5563;
+  font-size: 0.9rem;
 }
 
 .dark .example-section-title {
@@ -697,17 +716,20 @@ body.dark .js-comment,
 .example-code {
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
   background-color: #f1f5f9;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
+  padding: 0.75rem;
+  border-radius: 0.35rem;
   margin-bottom: 0.5rem;
   white-space: pre-wrap;
   font-size: 0.85rem;
   color: #334155;
+  border: 1px solid #e2e8f0;
+  overflow-x: auto;
 }
 
 .dark .example-code {
   background-color: #0f172a;
   color: #e2e8f0;
+  border-color: #1e293b;
 }
 
 .example-divider {
