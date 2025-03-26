@@ -519,6 +519,59 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     return "Hard";
   };
 
+  // Parse and render the example section
+  const renderDescription = (description: string) => {
+    if (!description.includes('Example 1:')) {
+      // If there's no example format, just return the raw description
+      return <p className="problem-description text-sm text-gray-600 dark:text-gray-300 mt-2 whitespace-pre-line text-left">
+        {description}
+      </p>;
+    }
+
+    const parts = description.split('Example 1:');
+    const descriptionText = parts[0].trim();
+    const examplePart = 'Example 1:' + parts[1];
+
+    // Extract sections from the example
+    const inputMatch = examplePart.match(/Input:\s*\n([\s\S]*?)(?=\n\nOutput:)/);
+    const outputMatch = examplePart.match(/Output:\s*\n([\s\S]*?)(?=\n\nExplanation:|\n\-{2,}|$)/);
+    const explanationMatch = examplePart.match(/Explanation:\s*\n([\s\S]*?)(?=\n\-{2,}|$)/);
+
+    const inputText = inputMatch ? inputMatch[1].trim() : '';
+    const outputText = outputMatch ? outputMatch[1].trim() : '';
+    const explanationText = explanationMatch ? explanationMatch[1].trim() : '';
+
+    return (
+      <>
+        <p className="problem-description text-sm text-gray-600 dark:text-gray-300 mt-2 mb-4 whitespace-pre-line text-left">
+          {descriptionText}
+        </p>
+        
+        <div className="leetcode-example">
+          <div className="example-header">Example 1</div>
+          <div className="example-content">
+            <div className="example-section">
+              <div className="example-section-title">Input:</div>
+              <pre className="example-code">{inputText}</pre>
+            </div>
+            
+            <div className="example-section">
+              <div className="example-section-title">Output:</div>
+              <pre className="example-code">{outputText}</pre>
+            </div>
+            
+            {explanationText && (
+              <div className="example-section">
+                <div className="example-section-title">Explanation:</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">{explanationText}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </>
+    );
+  };
+
   // Get current section
   const currentSection = puzzle.sections[currentSectionIndex];
 
@@ -546,9 +599,10 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
               {getDifficultyText(puzzle.difficulty)}
             </span>
           </div>
-          <p className="problem-description text-sm text-gray-600 dark:text-gray-300 mt-2 whitespace-pre-line text-left">
-            {puzzle.description}
-          </p>
+          <div
+            className="problem-description text-sm text-gray-600 dark:text-gray-300 mt-2 whitespace-pre-line text-left"
+            dangerouslySetInnerHTML={{ __html: puzzle.description }}
+          />
         </div>
 
         <div className="editor-container mb-4 rounded-lg overflow-hidden shadow-md">

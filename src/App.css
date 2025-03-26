@@ -648,3 +648,74 @@ body.dark .js-comment,
 .popup-exit {
   animation: popupExit 0.2s ease-in forwards;
 }
+
+/* LeetCode-style example formatting */
+.leetcode-example {
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.dark .leetcode-example {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.example-header {
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.dark .example-header {
+  background-color: #334155;
+  border-color: #475569;
+}
+
+.example-content {
+  padding: 1rem;
+}
+
+.example-section {
+  margin-bottom: 0.75rem;
+}
+
+.example-section-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #4b5563;
+}
+
+.dark .example-section-title {
+  color: #94a3b8;
+}
+
+.example-code {
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  background-color: #f1f5f9;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+  white-space: pre-wrap;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.dark .example-code {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.example-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 1rem 0;
+}
+
+.dark .example-divider {
+  background-color: #334155;
+}
