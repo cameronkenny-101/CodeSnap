@@ -555,11 +555,11 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         <div className="editor-container mb-4 rounded-lg overflow-hidden shadow-md">
           <div className="editor-header flex justify-between items-center bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {currentSection.title}
-              </span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
                 Step {currentSectionIndex + 1} of {puzzle.sections.length}
+              </span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {currentSection.title}
               </span>
             </div>
             <div className="text-xs text-gray-500">JavaScript</div>
