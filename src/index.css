@@ -182,3 +182,36 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Add popup animations */
+.popup-animate {
+  animation: popup-enter 0.2s ease-out;
+  transform-origin: center;
+}
+
+.popup-exit {
+  animation: popup-exit 0.2s ease-in;
+  transform-origin: center;
+}
+
+@keyframes popup-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes popup-exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}

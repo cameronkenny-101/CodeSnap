@@ -776,49 +776,124 @@ export const puzzles: Puzzle[] = [
     sections: [
       {
         id: 'two-sum-init',
-        title: 'Step 1: Initialize Variables',
-        description: 'Initialize a map to store the indices of the numbers.',
-        codeTemplate: 'const map = new Map();\nfor (let i = 0; i < nums.length; i++) {\n    const complement = target - nums[i];\n    if (map.has(complement)) {\n        return [map.get(complement), i];\n    }\n    map.set(nums[i], i);\n}\nreturn [];',
+        title: 'Step 1: Initialize Map',
+        description: 'Initialize a map to store the indices of the numbers we\'ve seen so far.',
+        codeTemplate: `const twoSum = (nums, target) => {
+  const map = %SLOT-1%;
+  // To be continued...
+}`,
         slots: [
-          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false },
-          { id: 'slot-2', correctBlockId: 'block-2', filledWithBlockId: null, isSolved: false, isIncorrect: false },
-          { id: 'slot-3', correctBlockId: 'block-3', filledWithBlockId: null, isSolved: false, isIncorrect: false },
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
         ],
         blocks: [
-          { id: 'block-1', content: 'const map = new Map();', isCorrect: true, slotId: 'slot-1' },
-          { id: 'block-2', content: 'for (let i = 0; i < nums.length; i++) {', isCorrect: true, slotId: 'slot-2' },
-          { id: 'block-3', content: 'const complement = target - nums[i];', isCorrect: true, slotId: 'slot-3' },
+          { id: 'block-1', content: 'new Map()', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: '{} ', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: '[]', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
         ],
-        isVisible: true,
+        isVisible: true
+      },
+      {
+        id: 'two-sum-loop',
+        title: 'Step 2: Loop Through Array',
+        description: 'Loop through each number in the array to find the pairs that sum to target.',
+        codeTemplate: `const twoSum = (nums, target) => {
+  const map = new Map();
+  
+  %SLOT-1% {
+    // To be continued...
+  }
+  return [];
+}`,
+        slots: [
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
+        ],
+        blocks: [
+          { id: 'block-1', content: 'for (let i = 0; i < nums.length; i++)', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: 'nums.forEach((num, i) =>', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 'while (nums.length > 0)', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
+        ],
+        isVisible: false
+      },
+      {
+        id: 'two-sum-complement',
+        title: 'Step 3: Calculate Complement',
+        description: 'For each number, calculate its complement (the value needed to reach the target).',
+        codeTemplate: `const twoSum = (nums, target) => {
+  const map = new Map();
+  
+  for (let i = 0; i < nums.length; i++) {
+    const complement = %SLOT-1%;
+    // To be continued...
+  }
+  return [];
+}`,
+        slots: [
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
+        ],
+        blocks: [
+          { id: 'block-1', content: 'target - nums[i]', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: 'nums[i] - target', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 'target / nums[i]', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
+        ],
+        isVisible: false
       },
       {
         id: 'two-sum-check',
-        title: 'Step 2: Check for Complement',
+        title: 'Step 4: Check for Complement',
         description: 'Check if the complement is already in the map.',
-        codeTemplate: 'if (map.has(complement)) {\n    return [map.get(complement), i];\n}',
+        codeTemplate: `const twoSum = (nums, target) => {
+  const map = new Map();
+  
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    
+    if (%SLOT-1%) {
+      return [map.get(complement), i];
+    }
+    // To be continued...
+  }
+  return [];
+}`,
         slots: [
-          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false },
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
         ],
         blocks: [
-          { id: 'block-1', content: 'if (map.has(complement)) {', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-1', content: 'map.has(complement)', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: 'map.includes(complement)', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 'complement in map', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
         ],
-        isVisible: false,
+        isVisible: false
       },
       {
-        id: 'two-sum-return',
-        title: 'Step 3: Return Result',
-        description: 'Return the indices of the two numbers.',
-        codeTemplate: 'return [map.get(complement), i];',
+        id: 'two-sum-store',
+        title: 'Step 5: Store Number and Index',
+        description: 'If the complement isn\'t found, store the current number and its index in the map.',
+        codeTemplate: `const twoSum = (nums, target) => {
+  const map = new Map();
+  
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    
+    if (map.has(complement)) {
+      return [map.get(complement), i];
+    }
+    
+    %SLOT-1%;
+  }
+  return [];
+}`,
         slots: [
-          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false },
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
         ],
         blocks: [
-          { id: 'block-1', content: 'return [map.get(complement), i];', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-1', content: 'map.set(nums[i], i)', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: 'map[nums[i]] = i', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 'map.push([nums[i], i])', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
         ],
-        isVisible: false,
-      },
+        isVisible: false
+      }
     ],
-    currentSectionIndex: 0,
+    currentSectionIndex: 0
   },
   {
     id: 'palindrome-number',
@@ -829,20 +904,41 @@ export const puzzles: Puzzle[] = [
       {
         id: 'palindrome-convert',
         title: 'Step 1: Convert to String',
-        description: 'Convert the integer to a string and check if it reads the same backward as forward.',
-        codeTemplate: 'const str = x.toString();\nreturn str === str.split("").reverse().join("");',
+        description: 'Convert the integer to a string to make it easier to check if it\'s a palindrome.',
+        codeTemplate: `const isPalindrome = (x) => {
+  const str = %SLOT-1%;
+  // To be continued...
+}`,
         slots: [
-          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false },
-          { id: 'slot-2', correctBlockId: 'block-2', filledWithBlockId: null, isSolved: false, isIncorrect: false },
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
         ],
         blocks: [
-          { id: 'block-1', content: 'const str = x.toString();', isCorrect: true, slotId: 'slot-1' },
-          { id: 'block-2', content: 'return str === str.split("").reverse().join("");', isCorrect: true, slotId: 'slot-2' },
+          { id: 'block-1', content: 'x.toString()', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: 'String(x)', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: '`${x}`', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
         ],
-        isVisible: true,
+        isVisible: true
       },
+      {
+        id: 'palindrome-check',
+        title: 'Step 2: Check if Palindrome',
+        description: 'Compare the string with its reversed version to check if it\'s a palindrome.',
+        codeTemplate: `const isPalindrome = (x) => {
+  const str = x.toString();
+  return %SLOT-1%;
+}`,
+        slots: [
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
+        ],
+        blocks: [
+          { id: 'block-1', content: 'str === str.split("").reverse().join("")', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: 'str.charAt(0) === str.charAt(str.length - 1)', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 'Array.from(str).sort().join("") === str', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
+        ],
+        isVisible: false
+      }
     ],
-    currentSectionIndex: 0,
+    currentSectionIndex: 0
   },
   {
     id: 'roman-to-integer',
@@ -854,47 +950,119 @@ export const puzzles: Puzzle[] = [
         id: 'roman-values',
         title: 'Step 1: Define Roman Values',
         description: 'Define a map of Roman numerals to their integer values.',
-        codeTemplate: 'const roman = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };\nlet result = 0;',
+        codeTemplate: `const romanToInt = (s) => {
+  const roman = %SLOT-1%;
+  let result = 0;
+  // To be continued...
+};`,
         slots: [
-          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false },
-          { id: 'slot-2', correctBlockId: 'block-2', filledWithBlockId: null, isSolved: false, isIncorrect: false },
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
         ],
         blocks: [
-          { id: 'block-1', content: 'const roman = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };', isCorrect: true, slotId: 'slot-1' },
-          { id: 'block-2', content: 'let result = 0;', isCorrect: true, slotId: 'slot-2' },
+          { id: 'block-1', content: '{ I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: '{ I: 1, V: 5, X: 10, L: 100, C: 50, D: 500, M: 1000 }', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 'new Map([["I", 1], ["V", 5], ["X", 10], ["L", 50], ["C", 100], ["D", 500], ["M", 1000]])', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
         ],
-        isVisible: true,
+        isVisible: true
+      },
+      {
+        id: 'roman-init',
+        title: 'Step 2: Initialize Result',
+        description: 'Initialize a variable to store the result.',
+        codeTemplate: `const romanToInt = (s) => {
+  const roman = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  let result = %SLOT-1%;
+  // To be continued...
+};`,
+        slots: [
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
+        ],
+        blocks: [
+          { id: 'block-1', content: '0', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: '[]', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 'null', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
+        ],
+        isVisible: false
       },
       {
         id: 'roman-loop',
-        title: 'Step 2: Loop Through Roman Numeral',
-        description: 'Loop through the Roman numeral and calculate the integer value.',
-        codeTemplate: 'for (let i = 0; i < s.length; i++) {\n    if (roman[s[i]] < roman[s[i + 1]]) {\n        result -= roman[s[i]];\n    } else {\n        result += roman[s[i]];\n    }\n}',
+        title: 'Step 3: Loop Through Roman Numeral',
+        description: 'Loop through each character in the Roman numeral string.',
+        codeTemplate: `const romanToInt = (s) => {
+  const roman = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  let result = 0;
+  
+  %SLOT-1% {
+    // To be continued...
+  }
+};`,
         slots: [
-          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false },
-          { id: 'slot-2', correctBlockId: 'block-2', filledWithBlockId: null, isSolved: false, isIncorrect: false },
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
         ],
         blocks: [
-          { id: 'block-1', content: 'for (let i = 0; i < s.length; i++) {', isCorrect: true, slotId: 'slot-1' },
-          { id: 'block-2', content: 'if (roman[s[i]] < roman[s[i + 1]]) {', isCorrect: true, slotId: 'slot-2' },
+          { id: 'block-1', content: 'for (let i = 0; i < s.length; i++)', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: 'while (s.length > 0)', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 's.split("").forEach((char, i) =>', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
         ],
-        isVisible: false,
+        isVisible: false
       },
       {
-        id: 'roman-calculate',
-        title: 'Step 3: Calculate Result',
-        description: 'Calculate the result based on the Roman numeral rules.',
-        codeTemplate: 'result -= roman[s[i]];',
+        id: 'roman-compare',
+        title: 'Step 4: Compare Adjacent Values',
+        description: 'Check if the current Roman numeral is less than the next one to handle subtraction cases like "IV" (4).',
+        codeTemplate: `const romanToInt = (s) => {
+  const roman = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  let result = 0;
+  
+  for (let i = 0; i < s.length; i++) {
+    if (%SLOT-1%) {
+      result -= roman[s[i]];
+    } else {
+      result += roman[s[i]];
+    }
+  }
+  // To be continued...
+};`,
         slots: [
-          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false },
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
         ],
         blocks: [
-          { id: 'block-1', content: 'result -= roman[s[i]];', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-1', content: 'roman[s[i]] < roman[s[i + 1]]', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: 'roman[s[i]] > roman[s[i + 1]]', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 's[i] === "I" && (s[i+1] === "V" || s[i+1] === "X")', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
         ],
-        isVisible: false,
+        isVisible: false
       },
+      {
+        id: 'roman-return',
+        title: 'Step 5: Return Result',
+        description: 'Return the final calculated integer value.',
+        codeTemplate: `const romanToInt = (s) => {
+  const roman = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  let result = 0;
+  
+  for (let i = 0; i < s.length; i++) {
+    if (roman[s[i]] < roman[s[i + 1]]) {
+      result -= roman[s[i]];
+    } else {
+      result += roman[s[i]];
+    }
+  }
+  
+  return %SLOT-1%;
+};`,
+        slots: [
+          { id: 'slot-1', correctBlockId: 'block-1', filledWithBlockId: null, isSolved: false, isIncorrect: false }
+        ],
+        blocks: [
+          { id: 'block-1', content: 'result', isCorrect: true, slotId: 'slot-1' },
+          { id: 'block-2', content: 'parseInt(result)', isCorrect: false, isDecoy: true, slotId: 'slot-1' },
+          { id: 'block-3', content: 'Number(result.toFixed(0))', isCorrect: false, isDecoy: true, slotId: 'slot-1' }
+        ],
+        isVisible: false
+      }
     ],
-    currentSectionIndex: 0,
+    currentSectionIndex: 0
   },
   {
     id: 'merge-intervals',

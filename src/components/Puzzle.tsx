@@ -34,6 +34,8 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   });
   const [showRetryOptions, setShowRetryOptions] = useState(false);
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
+  const [isLoadingNext, setIsLoadingNext] = useState(false);
+  const [isExitingPopup, setIsExitingPopup] = useState(false);
 
   // Initialize puzzle state
   const initializePuzzleState = () => {
@@ -255,11 +257,29 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   const checkSolution = () => {
     if (!currentSection) return;
 
-    const isCorrect = developerSettings.forceCorrect ? true :
+    // Log the current state of slots for debugging
+    console.log('[DEBUG] Checking solution for section:', currentSection.title);
+    slots.forEach((slot, index) => {
+        console.log(`[DEBUG] Slot ${index}:`, {
+            id: slot.id,
+            filledWithBlockId: slot.filledWithBlockId,
+            correctBlockId: slot.correctBlockId,
+            isCorrect: slot.filledWithBlockId === slot.correctBlockId
+        });
+    });
+
+    // Check if developer mode is enabled
+    console.log('[DEBUG] Developer settings:', developerSettings);
+
+    // If force correct is enabled, skip the actual check
+    const isCorrect = developerSettings.forceCorrect ? true : 
       slots.every((slot) => {
-        const correctBlockId = slot.correctBlockId;
-        return slot.filledWithBlockId === correctBlockId;
+        const isSlotCorrect = slot.filledWithBlockId === slot.correctBlockId;
+        console.log(`[DEBUG] Checking slot ${slot.id}: filled=${slot.filledWithBlockId}, correct=${slot.correctBlockId}, match=${isSlotCorrect}`);
+        return isSlotCorrect;
       });
+
+    console.log('[DEBUG] Overall solution correct:', isCorrect);
 
     if (isCorrect) {
       setIsTransitioning(true);
@@ -293,16 +313,24 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       } else {
         // This was the last section, puzzle is complete
         console.log('[DEBUG] Scheduling puzzle completion (success)');
+        setIsLoadingNext(true);
         setTimeout(() => {
           console.log('[DEBUG] Completing puzzle now');
           onPuzzleComplete();
           completeEntirePuzzle(true);
-          setIsTransitioning(false);
-          setFeedbackMessage({
-            type: 'success',
-            message: 'Loading next puzzle...'
-          });
-        }, 1000);
+          
+          // Use a separate timer to allow state to update properly
+          setTimeout(() => {
+            // Reset transition states to prepare for the next puzzle
+            setIsTransitioning(false);
+            setFeedbackMessage({ type: 'none', message: '' });
+            setIsLoadingNext(false);
+            
+            // Load the next puzzle
+            loadNextPuzzle();
+            console.log('[DEBUG] Next puzzle loaded');
+          }, 500);
+        }, 1200);
       }
     } else {
       // Mark incorrect slots and show error message
@@ -605,7 +633,9 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       {/* Feedback message */}
       {feedbackMessage.type !== 'none' && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div className={`popup-animate max-w-md w-full mx-4 p-6 rounded-lg border shadow-lg ${feedbackMessage.type === 'success'
+          <div className={`popup-animate max-w-md w-full mx-4 p-6 rounded-lg border shadow-lg ${
+            isExitingPopup ? 'popup-exit' : ''
+          } ${feedbackMessage.type === 'success'
             ? isDarkMode
               ? 'bg-gray-800 text-green-300 border-green-700'
               : 'bg-white text-green-700 border-green-200'
@@ -615,6 +645,11 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
             }`}>
             <div className="text-center text-lg mb-4">
               {feedbackMessage.message}
+              {isLoadingNext && !showRetryOptions && (
+                <div className="mt-2">
+                  <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-t-transparent border-current"></div>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-center gap-3">

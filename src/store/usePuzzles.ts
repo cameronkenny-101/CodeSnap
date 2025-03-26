@@ -134,7 +134,7 @@ const usePuzzleStore = create<PuzzleState>()(
       },
 
       loadNextPuzzle: () => {
-        const { userProgress } = get();
+        const { userProgress, currentPuzzle } = get();
 
         // Get eligible puzzles based on ELO
         const eligiblePuzzles = getPuzzlesForElo(userProgress.elo, puzzles);
@@ -144,21 +144,33 @@ const usePuzzleStore = create<PuzzleState>()(
           return;
         }
 
+        // Filter out the current puzzle to ensure we get a different one
+        const filteredPuzzles = currentPuzzle 
+          ? eligiblePuzzles.filter(p => p.id !== currentPuzzle.id)
+          : eligiblePuzzles;
+        
+        // If we've filtered out all puzzles (only had one), then just use all eligible puzzles
+        const puzzlesToChooseFrom = filteredPuzzles.length > 0 ? filteredPuzzles : eligiblePuzzles;
+
         // Get a random puzzle from eligible ones
-        const randomIndex = Math.floor(Math.random() * eligiblePuzzles.length);
-        const nextPuzzle = JSON.parse(JSON.stringify(eligiblePuzzles[randomIndex]));
+        const randomIndex = Math.floor(Math.random() * puzzlesToChooseFrom.length);
+        const nextPuzzle = JSON.parse(JSON.stringify(puzzlesToChooseFrom[randomIndex]));
 
         console.log('[DEBUG] Store loadNextPuzzle:', {
-          fromIndex: userProgress.currentPuzzleIndex,
-          toIndex: randomIndex,
-          puzzleId: nextPuzzle.id,
+          fromPuzzleId: currentPuzzle?.id,
+          toPuzzleId: nextPuzzle.id,
+          eligibleCount: eligiblePuzzles.length,
+          filteredCount: filteredPuzzles.length,
+          randomIndex,
           title: nextPuzzle.title
         });
 
+        // Immediately update the state with the new puzzle
         set({
           currentPuzzle: nextPuzzle,
           currentSectionIndex: 0,
           isComplete: false,
+          hasFailedCurrentPuzzle: false,
         });
       },
 
