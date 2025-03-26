@@ -44,7 +44,7 @@ export const puzzles: Puzzle[] = [
   {
     id: 'binary-search',
     title: 'Binary Search Algorithm',
-    description: 'Complete the binary search algorithm by filling in the missing logic.',
+    description: 'Complete the binary search algorithm by filling in the missing logic. \n\nExample Input: arr = [1, 3, 5, 7, 9], target = 5 \nExample Output: 2 (index where target was found)',
     difficulty: 3,
     currentSectionIndex: 0,
     sections: [
@@ -1067,7 +1067,7 @@ export const puzzles: Puzzle[] = [
   {
     id: 'merge-intervals',
     title: 'Merge Overlapping Intervals',
-    description: 'Fill in the missing logic to merge overlapping intervals.',
+    description: 'Fill in the missing logic to merge overlapping intervals. \n\nExample Input: [[1,3], [2,6], [8,10], [15,18]] \nExample Output: [[1,6], [8,10], [15,18]]',
     difficulty: 3,
     currentSectionIndex: 0,
     sections: [
@@ -1167,7 +1167,7 @@ export const puzzles: Puzzle[] = [
   {
     id: 'dijkstra',
     title: "Dijkstra's Algorithm",
-    description: 'Find the shortest path from the source node in a weighted graph.',
+    description: 'Find the shortest path from the source node in a weighted graph. \n\nExample Input: Graph with nodes A, B, C and edges (A→B: 5, A→C: 10, B→C: 3), start=A \nExample Output: {A: 0, B: 5, C: 8}',
     difficulty: 5,
     currentSectionIndex: 0,
     sections: [

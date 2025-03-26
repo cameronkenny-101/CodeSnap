@@ -546,7 +546,9 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
               {getDifficultyText(puzzle.difficulty)}
             </span>
           </div>
-          <p className="problem-description text-sm text-gray-600 dark:text-gray-300 mt-2">{puzzle.description}</p>
+          <p className="problem-description text-sm text-gray-600 dark:text-gray-300 mt-2 whitespace-pre-line text-left">
+            {puzzle.description}
+          </p>
         </div>
 
         <div className="editor-container mb-4 rounded-lg overflow-hidden shadow-md">
