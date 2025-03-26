@@ -545,9 +545,6 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
             <span className={`problem-difficulty px-2 py-1 rounded-full text-xs font-medium ${getDifficultyClass(puzzle.difficulty)}`}>
               {getDifficultyText(puzzle.difficulty)}
             </span>
-            <span className="ml-auto text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
-              Part {currentSectionIndex + 1}/{puzzle.sections.length}
-            </span>
           </div>
           <p className="problem-description text-sm text-gray-600 dark:text-gray-300 mt-2">{puzzle.description}</p>
         </div>
