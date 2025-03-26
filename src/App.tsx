@@ -110,8 +110,18 @@ function AppContent() {
                 >
                   <div className="flex justify-between items-center">
                     <span className="font-medium">{puzzle.title}</span>
-                    <span className="text-sm">
-                      {Array(puzzle.difficulty).fill('⭐').join('')}
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                      puzzle.difficulty <= 2 
+                        ? "difficulty-easy" 
+                        : puzzle.difficulty <= 4 
+                          ? "difficulty-medium" 
+                          : "difficulty-hard"
+                    }`}>
+                      {puzzle.difficulty <= 2 
+                        ? "Easy" 
+                        : puzzle.difficulty <= 4 
+                          ? "Medium" 
+                          : "Hard"}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{puzzle.description}</p>

@@ -260,19 +260,19 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
     // Log the current state of slots for debugging
     console.log('[DEBUG] Checking solution for section:', currentSection.title);
     slots.forEach((slot, index) => {
-        console.log(`[DEBUG] Slot ${index}:`, {
-            id: slot.id,
-            filledWithBlockId: slot.filledWithBlockId,
-            correctBlockId: slot.correctBlockId,
-            isCorrect: slot.filledWithBlockId === slot.correctBlockId
-        });
+      console.log(`[DEBUG] Slot ${index}:`, {
+        id: slot.id,
+        filledWithBlockId: slot.filledWithBlockId,
+        correctBlockId: slot.correctBlockId,
+        isCorrect: slot.filledWithBlockId === slot.correctBlockId
+      });
     });
 
     // Check if developer mode is enabled
     console.log('[DEBUG] Developer settings:', developerSettings);
 
     // If force correct is enabled, skip the actual check
-    const isCorrect = developerSettings.forceCorrect ? true : 
+    const isCorrect = developerSettings.forceCorrect ? true :
       slots.every((slot) => {
         const isSlotCorrect = slot.filledWithBlockId === slot.correctBlockId;
         console.log(`[DEBUG] Checking slot ${slot.id}: filled=${slot.filledWithBlockId}, correct=${slot.correctBlockId}, match=${isSlotCorrect}`);
@@ -318,14 +318,14 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
           console.log('[DEBUG] Completing puzzle now');
           onPuzzleComplete();
           completeEntirePuzzle(true);
-          
+
           // Use a separate timer to allow state to update properly
           setTimeout(() => {
             // Reset transition states to prepare for the next puzzle
             setIsTransitioning(false);
             setFeedbackMessage({ type: 'none', message: '' });
             setIsLoadingNext(false);
-            
+
             // Load the next puzzle
             loadNextPuzzle();
             console.log('[DEBUG] Next puzzle loaded');
@@ -633,15 +633,14 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       {/* Feedback message */}
       {feedbackMessage.type !== 'none' && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div className={`popup-animate max-w-md w-full mx-4 p-6 rounded-lg border shadow-lg ${
-            isExitingPopup ? 'popup-exit' : ''
-          } ${feedbackMessage.type === 'success'
-            ? isDarkMode
-              ? 'bg-gray-800 text-green-300 border-green-700'
-              : 'bg-white text-green-700 border-green-200'
-            : isDarkMode
-              ? 'bg-gray-800 text-red-300 border-red-700'
-              : 'bg-white text-red-700 border-red-200'
+          <div className={`popup-animate max-w-md w-full mx-4 p-6 rounded-lg border shadow-lg ${isExitingPopup ? 'popup-exit' : ''
+            } ${feedbackMessage.type === 'success'
+              ? isDarkMode
+                ? 'bg-gray-800 text-green-300 border-green-700'
+                : 'bg-white text-green-700 border-green-200'
+              : isDarkMode
+                ? 'bg-gray-800 text-red-300 border-red-700'
+                : 'bg-white text-red-700 border-red-200'
             }`}>
             <div className="text-center text-lg mb-4">
               {feedbackMessage.message}
