@@ -6,7 +6,7 @@ import CodeSlot from './CodeSlot';
 import usePuzzleStore from '../store/usePuzzles';
 import { Puzzle as PuzzleType, CodeBlock as CodeBlockType } from '../utils/puzzles';
 import { useTheme } from '../context/ThemeContext';
-import { playErrorSound } from '../utils/audio';
+import { playErrorSound, playSuccessSound } from '../utils/audio';
 
 interface PuzzleProps {
   puzzle: PuzzleType;
@@ -34,7 +34,6 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   });
   const [showRetryOptions, setShowRetryOptions] = useState(false);
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
-  const [isLoadingNext, setIsLoadingNext] = useState(false);
 
   // Initialize puzzle state
   const initializePuzzleState = () => {
@@ -217,32 +216,45 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
   const handleRetry = () => {
     console.log('[DEBUG] handleRetry called');
 
-    // First reset all state flags
-    setShowRetryOptions(false);
-    setIsTransitioning(false);
-    setShowErrorAnimation(false);
-    setFeedbackMessage({ type: 'none', message: '' });
+    // First show exit animation
+    setIsExitingPopup(true);
 
-    // Then reset the slots and blocks
-    handleReset();
+    // Then reset after animation completes
+    setTimeout(() => {
+      setShowRetryOptions(false);
+      setIsTransitioning(false);
+      setShowErrorAnimation(false);
+      setFeedbackMessage({ type: 'none', message: '' });
+      setIsExitingPopup(false);
+
+      // Then reset the slots and blocks
+      handleReset();
+    }, 200); // Match animation duration
 
     console.log('[DEBUG] After handleRetry - isTransitioning:', false);
   };
 
   const handleMoveToNext = () => {
     console.log('[DEBUG] handleMoveToNext called');
-    setShowRetryOptions(false);
-    setIsTransitioning(false);
-    setFeedbackMessage({ type: 'none', message: '' });
 
-    // Load next puzzle
-    loadNextPuzzle();
+    // First show exit animation
+    setIsExitingPopup(true);
+
+    // Then reset after animation completes
+    setTimeout(() => {
+      setShowRetryOptions(false);
+      setIsTransitioning(false);
+      setFeedbackMessage({ type: 'none', message: '' });
+      setIsExitingPopup(false);
+
+      // Load next puzzle
+      loadNextPuzzle();
+    }, 200); // Match animation duration
   };
 
   const checkSolution = () => {
     if (!currentSection) return;
 
-    // If force correct is enabled, skip the actual check
     const isCorrect = developerSettings.forceCorrect ? true :
       slots.every((slot) => {
         const correctBlockId = slot.correctBlockId;
@@ -251,7 +263,8 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
 
     if (isCorrect) {
       setIsTransitioning(true);
-      // Show success feedback
+      playSuccessSound();
+
       setFeedbackMessage({
         type: 'success',
         message: 'Great job! That\'s correct.'
@@ -273,15 +286,13 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
         // Move to next section after a short delay
         setTimeout(() => {
           console.log('[DEBUG] Moving to next section now');
-          setIsLoadingNext(true);
           setCurrentSectionIndex(nextSectionIndex);
           setIsTransitioning(false);
           setFeedbackMessage({ type: 'none', message: '' });
-        }, 1200);
+        }, 1000);
       } else {
         // This was the last section, puzzle is complete
         console.log('[DEBUG] Scheduling puzzle completion (success)');
-        setIsLoadingNext(true);
         setTimeout(() => {
           console.log('[DEBUG] Completing puzzle now');
           onPuzzleComplete();
@@ -291,7 +302,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
             type: 'success',
             message: 'Loading next puzzle...'
           });
-        }, 1200);
+        }, 1000);
       }
     } else {
       // Mark incorrect slots and show error message
@@ -498,7 +509,8 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="leetcode-container pb-4 px-4 md:px-0">
+      <div className={`puzzle-container relative p-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'
+        }`}>
         <div className="mb-4">
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="problem-title text-xl font-bold">{puzzle.title}</h2>
@@ -593,21 +605,16 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
       {/* Feedback message */}
       {feedbackMessage.type !== 'none' && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div className={`max-w-md w-full mx-4 p-6 rounded-lg border shadow-lg ${feedbackMessage.type === 'success'
+          <div className={`popup-animate max-w-md w-full mx-4 p-6 rounded-lg border shadow-lg ${feedbackMessage.type === 'success'
             ? isDarkMode
               ? 'bg-gray-800 text-green-300 border-green-700'
               : 'bg-white text-green-700 border-green-200'
             : isDarkMode
               ? 'bg-gray-800 text-red-300 border-red-700'
               : 'bg-white text-red-700 border-red-200'
-            } transition-all duration-300 fade-in`}>
+            }`}>
             <div className="text-center text-lg mb-4">
               {feedbackMessage.message}
-              {isLoadingNext && !showRetryOptions && (
-                <div className="mt-2">
-                  <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-t-transparent border-current"></div>
-                </div>
-              )}
             </div>
 
             <div className="flex justify-center gap-3">
@@ -630,8 +637,7 @@ const Puzzle = ({ puzzle, onPuzzleComplete, onCorrectAnswer, onIncorrectAnswer }
             </div>
           </div>
         </div>
-      )
-      }
+      )}
     </DndProvider >
   );
 };
